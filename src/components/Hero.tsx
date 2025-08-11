@@ -89,9 +89,7 @@ export function Hero() {
             {/* Trust Badge */}
             <div className="animate-trust-badge inline-flex items-center space-x-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
               <Shield className="h-4 w-4 text-white" />
-              <span className="text-sm font-medium text-white">
-                Police-Verified Service Providers
-              </span>
+              <span className="text-sm font-medium text-white">Security guaranteed</span>
             </div>
 
             {/* Main Heading */}
@@ -153,10 +151,10 @@ export function Hero() {
           {/* Right Column - Service Categories & Search */}
           <div className="space-y-6">
             {showSearch ? (
-              <Card className="bg-white backdrop-blur-sm shadow-lg">
+              <Card className="bg-white shadow-lg backdrop-blur-sm">
                 <CardContent className="p-6">
                   <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-gray-900 font-semibold">Find Your Service</h3>
+                    <h3 className="font-semibold text-gray-900">Find Your Service</h3>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -172,10 +170,10 @@ export function Hero() {
             ) : (
               <>
                 {/* Popular Services */}
-                <Card className="bg-white backdrop-blur-sm shadow-lg">
+                <Card className="bg-white shadow-lg backdrop-blur-sm">
                   <CardContent className="p-6">
                     <div className="mb-4 flex items-center justify-between">
-                      <h3 className="text-gray-900 font-semibold">Popular Services</h3>
+                      <h3 className="font-semibold text-gray-900">Popular Services</h3>
                       <Badge variant="secondary" className="bg-primary/20 text-primary font-medium">
                         Most Requested
                       </Badge>
@@ -192,13 +190,18 @@ export function Hero() {
                             // eslint-disable-next-line no-console
                             console.log('Selected category:', category.name)
                           }}
-                          className="border-gray-200 hover:border-primary hover:bg-primary/10 hover-lift flex min-h-[48px] items-center space-x-3 rounded-lg border-2 p-4 transition-all duration-200 hover:scale-105 bg-white"
+                          className="hover:border-primary hover:bg-primary/10 hover-lift flex min-h-[48px] items-center space-x-3 rounded-lg border-2 border-gray-200 bg-white p-4 transition-all duration-200 hover:scale-105"
                         >
                           <span className="text-2xl">{category.icon}</span>
                           <div className="text-left">
-                            <div className="text-gray-900 font-semibold text-sm">{category.name}</div>
+                            <div className="text-sm font-semibold text-gray-900">
+                              {category.name}
+                            </div>
                             {category.popular && (
-                              <Badge variant="outline" className="mt-1 text-xs border-primary/50 text-primary">
+                              <Badge
+                                variant="outline"
+                                className="border-primary/50 text-primary mt-1 text-xs"
+                              >
                                 Popular
                               </Badge>
                             )}
@@ -215,10 +218,10 @@ export function Hero() {
                 </Card>
 
                 {/* Trust Indicators Carousel */}
-                <Card className="bg-white backdrop-blur-sm shadow-lg">
+                <Card className="bg-white shadow-lg backdrop-blur-sm">
                   <CardContent className="p-6">
                     <div className="mb-4 flex items-center justify-between">
-                      <h3 className="text-gray-900 font-semibold">Why Choose Weda.lk?</h3>
+                      <h3 className="font-semibold text-gray-900">Why Choose Weda.lk?</h3>
                       <div className="flex space-x-1">
                         <Button
                           variant="ghost"
@@ -262,10 +265,8 @@ export function Hero() {
                                     />
                                   ))}
                                 </div>
-                                <p className="text-gray-900 text-sm italic">
-                                  {slide.description}
-                                </p>
-                                <p className="text-gray-600 text-xs">— {slide.author}</p>
+                                <p className="text-sm text-gray-900 italic">{slide.description}</p>
+                                <p className="text-xs text-gray-600">— {slide.author}</p>
                               </div>
                             ) : (
                               <div className="flex items-center space-x-3">
@@ -279,10 +280,8 @@ export function Hero() {
                                   )}
                                 </div>
                                 <div>
-                                  <p className="text-gray-900 text-sm font-medium">
-                                    {slide.title}
-                                  </p>
-                                  <p className="text-gray-600 text-xs">{slide.details}</p>
+                                  <p className="text-sm font-medium text-gray-900">{slide.title}</p>
+                                  <p className="text-xs text-gray-600">{slide.details}</p>
                                 </div>
                               </div>
                             )}

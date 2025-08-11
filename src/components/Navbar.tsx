@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { LocationPicker, Location } from '@/components/LocationPicker'
-import { TrustBadge } from '@/components/TrustBadge'
 import { useState, useEffect } from 'react'
 import { Menu, X, MapPin, Search } from 'lucide-react'
 import Link from 'next/link'
@@ -67,10 +66,12 @@ export function Navbar() {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
-              <div className="bg-primary flex h-8 w-8 items-center justify-center rounded">
-                <span className="text-primary-foreground text-sm font-bold">W</span>
+              <div className="bg-primary flex h-9 w-9 items-center justify-center rounded">
+                <span className="text-primary-foreground text-xs leading-none font-bold tracking-tight">
+                  වැඩ
+                </span>
               </div>
-              <span className="text-foreground text-xl font-bold">Weda.lk</span>
+              <span className="text-foreground text-xl font-bold">වැඩ.lk</span>
             </Link>
 
             {/* Desktop Navigation Links */}
@@ -78,51 +79,45 @@ export function Navbar() {
               <div className="flex items-center space-x-8">
                 <Link
                   href="/services"
-                  className="text-muted-foreground hover:text-foreground flex items-center space-x-1 text-sm font-medium transition-colors"
+                  className="text-muted-foreground hover:text-foreground flex items-center space-x-1 text-base font-medium transition-colors"
                 >
-                  <Search className="h-4 w-4" />
+                  <Search className="h-5 w-5" />
                   <span>Find Services</span>
                 </Link>
                 <Link
                   href="/how-it-works"
-                  className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                  className="text-muted-foreground hover:text-foreground text-base font-medium transition-colors"
                 >
                   How it Works
                 </Link>
                 <Link
                   href="/become-provider"
-                  className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                  className="text-muted-foreground hover:text-foreground text-base font-medium transition-colors"
                 >
                   Become a Provider
                 </Link>
-                <div className="hidden lg:block">
-                  <TrustBadge type="police_verified" size="sm" />
-                </div>
               </div>
             </div>
 
             {/* Location & Auth */}
             <div className="flex items-center space-x-4">
-              <div className="text-muted-foreground hidden items-center space-x-2 text-sm sm:flex">
-                <MapPin className="h-4 w-4" />
+              <div className="text-muted-foreground hidden items-center space-x-2 text-base sm:flex">
+                <MapPin className="h-5 w-5" />
                 <span>{currentLocation?.city}</span>
               </div>
               <ThemeToggle />
               <Link href="/login">
-                <Button variant="outline" size="sm" className="hidden md:inline-flex">
+                <Button variant="outline" className="hidden text-base md:inline-flex">
                   Login
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button size="sm" className="hidden md:inline-flex">
-                  Sign Up
-                </Button>
+                <Button className="hidden text-base md:inline-flex">Sign Up</Button>
               </Link>
 
               {/* Mobile menu button */}
               <Button
                 variant="ghost"
-                size="sm"
                 className="md:hidden"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
@@ -136,28 +131,28 @@ export function Navbar() {
         {mobileMenuOpen && (
           <div className="border-border bg-background border-t md:hidden">
             <div className="space-y-4 px-4 py-4">
-              <div className="text-muted-foreground border-border flex items-center space-x-2 border-b pb-4 text-sm">
-                <MapPin className="h-4 w-4" />
+              <div className="text-muted-foreground border-border flex items-center space-x-2 border-b pb-4 text-base">
+                <MapPin className="h-5 w-5" />
                 <span>Current Location: {currentLocation?.city}</span>
               </div>
 
               <div className="space-y-2">
                 <Link
                   href="/services"
-                  className="text-foreground hover:bg-muted flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                  className="text-foreground hover:bg-muted flex items-center space-x-3 rounded-lg px-3 py-2 text-base font-medium transition-colors"
                 >
-                  <Search className="h-4 w-4" />
+                  <Search className="h-5 w-5" />
                   <span>Find Services</span>
                 </Link>
                 <Link
                   href="/how-it-works"
-                  className="text-muted-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-base font-medium transition-colors"
                 >
                   How it Works
                 </Link>
                 <Link
                   href="/become-provider"
-                  className="text-muted-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-base font-medium transition-colors"
                 >
                   Become a Provider
                 </Link>
@@ -165,14 +160,12 @@ export function Navbar() {
 
               <div className="border-border space-y-2 border-t pt-4">
                 <Link href="/login">
-                  <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start text-base">
                     Login
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button size="sm" className="w-full justify-start">
-                    Sign Up
-                  </Button>
+                  <Button className="w-full justify-start text-base">Sign Up</Button>
                 </Link>
               </div>
             </div>

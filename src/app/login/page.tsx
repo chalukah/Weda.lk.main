@@ -14,21 +14,19 @@ export default function LoginPage() {
   const [loginMethod, setLoginMethod] = useState<'phone' | 'email'>('phone')
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <Navbar />
-      
+
       <main className="pt-16">
         <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-              <p className="text-muted-foreground">
-                Sign in to your Weda.lk account
-              </p>
+              <p className="text-muted-foreground">Sign in to your Weda.lk account</p>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Login Method Toggle */}
-              <div className="grid grid-cols-2 gap-2 rounded-lg bg-muted p-1">
+              <div className="bg-muted grid grid-cols-2 gap-2 rounded-lg p-1">
                 <Button
                   variant={loginMethod === 'phone' ? 'default' : 'ghost'}
                   size="sm"
@@ -58,20 +56,20 @@ export default function LoginPage() {
                   <div className="relative">
                     {loginMethod === 'phone' ? (
                       <div className="flex">
-                        <div className="flex items-center border border-r-0 rounded-l-md px-3 bg-muted">
+                        <div className="bg-muted flex items-center rounded-l-md border border-r-0 px-3">
                           <span className="text-sm">+94</span>
                         </div>
                         <input
                           type="tel"
                           placeholder="77 123 4567"
-                          className="flex-1 rounded-r-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          className="border-input bg-background ring-offset-background focus-visible:ring-ring flex-1 rounded-r-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                         />
                       </div>
                     ) : (
                       <input
                         type="email"
                         placeholder="your@email.com"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                       />
                     )}
                   </div>
@@ -84,11 +82,11 @@ export default function LoginPage() {
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 pr-10 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 pr-10 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                     <button
                       type="button"
-                      className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                      className="text-muted-foreground hover:text-foreground absolute top-2.5 right-3"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -100,11 +98,11 @@ export default function LoginPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <input type="checkbox" id="remember" className="h-4 w-4" />
-                    <label htmlFor="remember" className="text-sm text-muted-foreground">
+                    <label htmlFor="remember" className="text-muted-foreground text-sm">
                       Remember me
                     </label>
                   </div>
-                  <Link href="#" className="text-sm text-primary hover:underline">
+                  <Link href="#" className="text-primary text-sm hover:underline">
                     Forgot password?
                   </Link>
                 </div>
@@ -120,7 +118,7 @@ export default function LoginPage() {
                   <Separator />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                  <span className="bg-background text-muted-foreground px-2">Or continue with</span>
                 </div>
               </div>
 

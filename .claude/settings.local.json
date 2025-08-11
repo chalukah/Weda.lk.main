@@ -11,7 +11,8 @@
       "Bash(npm run build:*)",
       "Bash(npx shadcn@latest add:*)",
       "Bash(npx prettier:*)",
-      "Bash(npx prisma generate:*)"
+      "Bash(npx prisma generate:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }

@@ -1,25 +1,19 @@
 import { Navbar } from '@/components/Navbar'
 import { Hero } from '@/components/Hero'
-import Pricing from '@/components/Pricing'
-import Testimonials from '@/components/Testimonials'
 import Footer from '@/components/Footer'
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div suppressHydrationWarning className="flex min-h-screen flex-col">
       <Navbar />
 
-      <main className="relative">
+      <main className="relative flex-1">
         <div id="unicorn-bg" className="absolute inset-0 z-0 h-full w-full" />
 
         <div className="relative z-10">
-          <div className="h-screen">
-            <Hero />
-          </div>
+          <Hero />
 
-          {/* New sections below the hero */}
-          <Pricing />
-          <Testimonials />
+          {/* Sections below the hero intentionally removed */}
         </div>
       </main>
 

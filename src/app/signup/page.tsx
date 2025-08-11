@@ -15,23 +15,21 @@ export default function SignupPage() {
   const [userType, setUserType] = useState<'customer' | 'provider'>('customer')
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <Navbar />
-      
+
       <main className="pt-16">
         <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-              <p className="text-muted-foreground">
-                Join Weda.lk and get started today
-              </p>
+              <p className="text-muted-foreground">Join Weda.lk and get started today</p>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* User Type Selection */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">I want to</label>
-                <div className="grid grid-cols-2 gap-2 rounded-lg bg-muted p-1">
+                <div className="bg-muted grid grid-cols-2 gap-2 rounded-lg p-1">
                   <Button
                     variant={userType === 'customer' ? 'default' : 'ghost'}
                     size="sm"
@@ -61,7 +59,7 @@ export default function SignupPage() {
                     <input
                       type="text"
                       placeholder="John"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                   </div>
                   <div className="space-y-2">
@@ -69,7 +67,7 @@ export default function SignupPage() {
                     <input
                       type="text"
                       placeholder="Doe"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                   </div>
                 </div>
@@ -78,13 +76,13 @@ export default function SignupPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Phone Number</label>
                   <div className="flex">
-                    <div className="flex items-center border border-r-0 rounded-l-md px-3 bg-muted">
+                    <div className="bg-muted flex items-center rounded-l-md border border-r-0 px-3">
                       <span className="text-sm">+94</span>
                     </div>
                     <input
                       type="tel"
                       placeholder="77 123 4567"
-                      className="flex-1 rounded-r-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="border-input bg-background ring-offset-background focus-visible:ring-ring flex-1 rounded-r-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                   </div>
                 </div>
@@ -95,7 +93,7 @@ export default function SignupPage() {
                   <input
                     type="email"
                     placeholder="your@email.com"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                   />
                 </div>
 
@@ -106,11 +104,11 @@ export default function SignupPage() {
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Create a strong password"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 pr-10 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 pr-10 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                     <button
                       type="button"
-                      className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                      className="text-muted-foreground hover:text-foreground absolute top-2.5 right-3"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -125,14 +123,18 @@ export default function SignupPage() {
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Confirm your password"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 pr-10 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 pr-10 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                     <button
                       type="button"
-                      className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+                      className="text-muted-foreground hover:text-foreground absolute top-2.5 right-3"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -140,7 +142,7 @@ export default function SignupPage() {
                 {/* Terms & Conditions */}
                 <div className="flex items-start space-x-2">
                   <input type="checkbox" id="terms" className="mt-1 h-4 w-4" />
-                  <label htmlFor="terms" className="text-sm text-muted-foreground">
+                  <label htmlFor="terms" className="text-muted-foreground text-sm">
                     I agree to the{' '}
                     <Link href="#" className="text-primary hover:underline">
                       Terms of Service
@@ -155,7 +157,7 @@ export default function SignupPage() {
                 {/* Marketing Consent */}
                 <div className="flex items-start space-x-2">
                   <input type="checkbox" id="marketing" className="mt-1 h-4 w-4" />
-                  <label htmlFor="marketing" className="text-sm text-muted-foreground">
+                  <label htmlFor="marketing" className="text-muted-foreground text-sm">
                     I'd like to receive updates and marketing communications via email
                   </label>
                 </div>
@@ -171,7 +173,7 @@ export default function SignupPage() {
                   <Separator />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                  <span className="bg-background text-muted-foreground px-2">Or continue with</span>
                 </div>
               </div>
 

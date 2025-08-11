@@ -45,7 +45,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <div className="mb-4 flex items-center">
               <Home className="mr-2 h-8 w-8 text-blue-500" />
-              <span className="text-2xl font-bold">Weda.lk</span>
+              <span className="text-2xl font-bold">වැඩ.lk</span>
             </div>
             <p className="mb-6 max-w-sm text-gray-400">
               Sri Lanka's premier real estate platform, connecting buyers, sellers, and agents with
@@ -140,7 +140,7 @@ export default function Footer() {
         {/* Bottom Footer */}
         <div className="flex flex-col items-center justify-between md:flex-row">
           <div className="mb-4 text-sm text-gray-400 md:mb-0">
-            © 2024 Weda.lk. All rights reserved.
+            © 2024 වැඩ.lk. All rights reserved.
           </div>
 
           {/* Social Links */}

@@ -39,7 +39,7 @@ const serviceCategories = [
   { id: 'plumbing', name: 'Plumbing', icon: '🔧' },
   { id: 'electrical', name: 'Electrical', icon: '⚡' },
   { id: 'gardening', name: 'Gardening', icon: '🌱' },
-  { id: 'painting', name: 'Painting', icon: '🎨' },
+  { id: 'painting', name: 'Painting', icon: '🖌️' },
   { id: 'carpentry', name: 'Carpentry', icon: '🪚' },
   { id: 'appliance', name: 'Appliance Repair', icon: '🔨' },
   { id: 'other', name: 'Other Services', icon: '⚙️' },

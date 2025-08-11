@@ -8,94 +8,100 @@ export default function HowItWorksPage() {
   const customerSteps = [
     {
       step: 1,
-      icon: <Search className="h-8 w-8 text-primary" />,
-      title: "Search & Browse",
-      description: "Find verified service providers in your area. Browse by category or search for specific services."
+      icon: <Search className="text-primary h-8 w-8" />,
+      title: 'Search & Browse',
+      description:
+        'Find verified service providers in your area. Browse by category or search for specific services.',
     },
     {
       step: 2,
-      icon: <UserCheck className="h-8 w-8 text-primary" />,
-      title: "Compare Providers",
-      description: "View profiles, ratings, and police verification status. Read reviews from previous customers."
+      icon: <UserCheck className="text-primary h-8 w-8" />,
+      title: 'Compare Providers',
+      description:
+        'View profiles, ratings, and police verification status. Read reviews from previous customers.',
     },
     {
       step: 3,
-      icon: <Calendar className="h-8 w-8 text-primary" />,
-      title: "Book Service",
-      description: "Select your preferred date and time. Provide service details and confirm your booking."
+      icon: <Calendar className="text-primary h-8 w-8" />,
+      title: 'Book Service',
+      description:
+        'Select your preferred date and time. Provide service details and confirm your booking.',
     },
     {
       step: 4,
-      icon: <CreditCard className="h-8 w-8 text-primary" />,
-      title: "Secure Payment",
-      description: "Pay securely through our escrow system. Your payment is held until service completion."
-    }
+      icon: <CreditCard className="text-primary h-8 w-8" />,
+      title: 'Secure Payment',
+      description:
+        'Pay securely through our escrow system. Your payment is held until service completion.',
+    },
   ]
 
   const providerSteps = [
     {
       step: 1,
-      icon: <UserCheck className="h-8 w-8 text-primary" />,
-      title: "Complete Verification",
-      description: "Submit required documents including police clearance certificate for verification."
+      icon: <UserCheck className="text-primary h-8 w-8" />,
+      title: 'Complete Verification',
+      description:
+        'Submit required documents including police clearance certificate for verification.',
     },
     {
       step: 2,
-      icon: <Shield className="h-8 w-8 text-primary" />,
-      title: "Profile Approval",
-      description: "Our team reviews and approves your profile. Get verified provider status."
+      icon: <Shield className="text-primary h-8 w-8" />,
+      title: 'Profile Approval',
+      description: 'Our team reviews and approves your profile. Get verified provider status.',
     },
     {
       step: 3,
-      icon: <Calendar className="h-8 w-8 text-primary" />,
-      title: "Receive Bookings",
-      description: "Get notified of booking requests. Accept jobs that fit your schedule."
+      icon: <Calendar className="text-primary h-8 w-8" />,
+      title: 'Receive Bookings',
+      description: 'Get notified of booking requests. Accept jobs that fit your schedule.',
     },
     {
       step: 4,
-      icon: <Star className="h-8 w-8 text-primary" />,
-      title: "Complete & Earn",
-      description: "Provide quality service, get paid, and build your reputation through reviews."
-    }
+      icon: <Star className="text-primary h-8 w-8" />,
+      title: 'Complete & Earn',
+      description: 'Provide quality service, get paid, and build your reputation through reviews.',
+    },
   ]
 
   const trustFeatures = [
     {
       icon: <Shield className="h-6 w-6 text-green-600" />,
-      title: "Police Verification",
-      description: "All service providers undergo thorough background checks including police clearance."
+      title: 'Police Verification',
+      description:
+        'All service providers undergo thorough background checks including police clearance.',
     },
     {
       icon: <CreditCard className="h-6 w-6 text-blue-600" />,
-      title: "Secure Payments",
-      description: "Escrow payment system protects both customers and providers."
+      title: 'Secure Payments',
+      description: 'Escrow payment system protects both customers and providers.',
     },
     {
       icon: <Star className="h-6 w-6 text-yellow-600" />,
-      title: "Verified Reviews",
-      description: "Authentic reviews from real customers who used the service."
+      title: 'Verified Reviews',
+      description: 'Authentic reviews from real customers who used the service.',
     },
     {
       icon: <CheckCircle className="h-6 w-6 text-purple-600" />,
-      title: "Quality Guarantee",
-      description: "We ensure service quality through our verification and review system."
-    }
+      title: 'Quality Guarantee',
+      description: 'We ensure service quality through our verification and review system.',
+    },
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <Navbar />
-      
+
       <main className="pt-16">
         {/* Hero Section */}
-        <section className="bg-gradient-to-b from-primary/10 to-background py-16">
-          <div className="mx-auto max-w-4xl px-4 lg:px-8 text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        <section className="from-primary/10 to-background bg-gradient-to-b py-16">
+          <div className="mx-auto max-w-4xl px-4 text-center lg:px-8">
+            <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
               How Weda.lk Works
             </h1>
-            <p className="mt-6 text-xl text-muted-foreground">
-              Connecting customers with verified service providers in Sri Lanka. 
-              Safe, secure, and simple.
+            <p className="text-muted-foreground mt-6 text-xl">
+              Connecting customers with verified service providers in Sri Lanka. Safe, secure, and
+              simple.
             </p>
           </div>
         </section>
@@ -103,11 +109,9 @@ export default function HowItWorksPage() {
         {/* For Customers */}
         <section className="py-16">
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">
-                For Customers
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
+            <div className="mb-12 text-center">
+              <h2 className="text-foreground text-3xl font-bold tracking-tight">For Customers</h2>
+              <p className="text-muted-foreground mt-4 text-lg">
                 Find and book trusted service providers in 4 simple steps
               </p>
             </div>
@@ -116,7 +120,7 @@ export default function HowItWorksPage() {
               {customerSteps.map((step) => (
                 <Card key={step.step} className="text-center">
                   <CardHeader>
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                    <div className="bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
                       {step.icon}
                     </div>
                     <div className="mb-2">
@@ -136,13 +140,13 @@ export default function HowItWorksPage() {
         </section>
 
         {/* For Providers */}
-        <section className="py-16 bg-muted/20">
+        <section className="bg-muted/20 py-16">
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">
+            <div className="mb-12 text-center">
+              <h2 className="text-foreground text-3xl font-bold tracking-tight">
                 For Service Providers
               </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
+              <p className="text-muted-foreground mt-4 text-lg">
                 Join our platform and grow your business with verified customers
               </p>
             </div>
@@ -151,7 +155,7 @@ export default function HowItWorksPage() {
               {providerSteps.map((step) => (
                 <Card key={step.step} className="text-center">
                   <CardHeader>
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                    <div className="bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
                       {step.icon}
                     </div>
                     <div className="mb-2">
@@ -173,11 +177,11 @@ export default function HowItWorksPage() {
         {/* Trust & Safety */}
         <section className="py-16">
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">
+            <div className="mb-12 text-center">
+              <h2 className="text-foreground text-3xl font-bold tracking-tight">
                 Trust & Safety First
               </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
+              <p className="text-muted-foreground mt-4 text-lg">
                 We prioritize your safety with comprehensive verification and security measures
               </p>
             </div>
@@ -192,7 +196,7 @@ export default function HowItWorksPage() {
                     <CardTitle className="text-lg">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    <p className="text-muted-foreground text-sm">{feature.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -201,10 +205,10 @@ export default function HowItWorksPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-16 bg-muted/20">
+        <section className="bg-muted/20 py-16">
           <div className="mx-auto max-w-4xl px-4 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">
+            <div className="mb-12 text-center">
+              <h2 className="text-foreground text-3xl font-bold tracking-tight">
                 Frequently Asked Questions
               </h2>
             </div>
@@ -212,11 +216,13 @@ export default function HowItWorksPage() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">How do I know a provider is trustworthy?</CardTitle>
+                  <CardTitle className="text-lg">
+                    How do I know a provider is trustworthy?
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    All our service providers undergo police verification and background checks. 
+                    All our service providers undergo police verification and background checks.
                     Look for the verified badge and read authentic customer reviews.
                   </p>
                 </CardContent>
@@ -228,20 +234,22 @@ export default function HowItWorksPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    We use an escrow payment system. Your payment is held securely until the 
-                    service is completed to your satisfaction, protecting both you and the provider.
+                    We use an escrow payment system. Your payment is held securely until the service
+                    is completed to your satisfaction, protecting both you and the provider.
                   </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">What if I'm not satisfied with the service?</CardTitle>
+                  <CardTitle className="text-lg">
+                    What if I'm not satisfied with the service?
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    We have a dispute resolution process. Contact our support team, and we'll 
-                    work with both parties to find a fair solution.
+                    We have a dispute resolution process. Contact our support team, and we'll work
+                    with both parties to find a fair solution.
                   </p>
                 </CardContent>
               </Card>
