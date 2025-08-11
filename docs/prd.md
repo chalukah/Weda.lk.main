@@ -3,6 +3,7 @@
 ## Goals and Background Context
 
 ### Goals
+
 - Establish Weda.lk as Sri Lanka's leading trusted home services marketplace
 - Connect homeowners with police-verified service providers across multiple provinces
 - Achieve 10,000+ monthly active users and 1,000+ verified professionals in Year 1
@@ -19,9 +20,9 @@ The current landscape consists of limited players like PickMe Services (Colombo-
 
 ### Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|---------|
-| 2025-08-11 | 1.0 | Initial PRD creation from project brief | John (PM) |
+| Date       | Version | Description                             | Author    |
+| ---------- | ------- | --------------------------------------- | --------- |
+| 2025-08-11 | 1.0     | Initial PRD creation from project brief | John (PM) |
 
 ---
 
@@ -59,9 +60,11 @@ The current landscape consists of limited players like PickMe Services (Colombo-
 ## User Interface Design Goals
 
 ### Overall UX Vision
+
 Establish a trustworthy, accessible marketplace that prioritizes verification transparency and ease-of-use for Sri Lankan households. The interface should bridge traditional service booking methods (phone calls, word-of-mouth) with modern digital convenience, emphasizing visual credibility indicators and straightforward navigation patterns familiar to local users.
 
 ### Key Interaction Paradigms
+
 - **Verification-first display**: Police clearance and rating badges prominently featured throughout provider interactions
 - **Location-aware discovery**: GPS-enabled service matching with manual address input fallback
 - **Simplified booking workflow**: WhatsApp-like communication patterns with structured service requests
@@ -69,6 +72,7 @@ Establish a trustworthy, accessible marketplace that prioritizes verification tr
 - **Trust-building elements**: Photo verification, review authenticity indicators, and transparent pricing
 
 ### Core Screens and Views
+
 - **Home/Service Discovery**: Category-based browsing with location detection and featured providers
 - **Provider Profile**: Comprehensive view with verification status, portfolio gallery, pricing, and customer reviews
 - **Service Booking**: Step-by-step flow with date/time selection, service details, and price confirmation
@@ -79,12 +83,15 @@ Establish a trustworthy, accessible marketplace that prioritizes verification tr
 - **Admin Console**: Provider verification workflow, dispute resolution, and platform analytics
 
 ### Accessibility: WCAG AA
+
 Implement WCAG AA standards to ensure usability across diverse user capabilities, particularly important given varying digital literacy levels in target market. Focus on clear navigation, readable fonts, and screen reader compatibility.
 
 ### Branding
+
 Professional yet approachable design language that builds consumer confidence. Incorporate subtle Sri Lankan design elements (color palette inspired by local preferences) while maintaining international marketplace standards. Strong emphasis on security and verification visual indicators to differentiate from informal service arrangements.
 
 ### Target Device and Platforms: Web Responsive
+
 Mobile-first responsive design optimized for smartphones (primary user device), with progressive web app capabilities for app-like experience. Desktop version optimized for service provider management tasks and admin functions.
 
 ---
@@ -92,23 +99,28 @@ Mobile-first responsive design optimized for smartphones (primary user device), 
 ## Technical Assumptions
 
 ### Repository Structure: Monorepo
+
 Single repository containing frontend, backend, and shared utilities to simplify development workflow, dependency management, and deployment processes for small team.
 
 ### Service Architecture
+
 **Monolithic Architecture with Modular Design**: Start with Next.js full-stack application using API routes for backend logic, PostgreSQL for data persistence, and Redis for caching. This approach enables rapid development while maintaining clear separation of concerns and future microservices migration path as platform scales.
 
 ### Testing Requirements
+
 **Unit + Integration Testing**: Implement comprehensive testing strategy with Jest for unit tests, Playwright for end-to-end user flows, and API integration testing for payment and external service workflows. Manual testing protocols for service provider verification processes.
 
 ### Additional Technical Assumptions and Requests
 
 **Frontend Technology Stack:**
+
 - **Next.js 15** with React 19 for SSR/SSG capabilities and optimal SEO
 - **TypeScript** for type safety and developer productivity
 - **Tailwind CSS** with shadcn/ui components for consistent design system
 - **GSAP** for smooth animations and trust-building micro-interactions
 
 **Backend & Infrastructure:**
+
 - **Node.js/Next.js API routes** for unified development experience
 - **PostgreSQL** for relational data (users, bookings, reviews, payments)
 - **Redis** for session management and caching frequently accessed data
@@ -116,12 +128,14 @@ Single repository containing frontend, backend, and shared utilities to simplify
 - **Vercel/Railway** for hosting with auto-scaling capabilities
 
 **Payment & External Services:**
+
 - **PayHere** as primary payment gateway (Sri Lankan market leader)
 - **Stripe** as secondary option for international cards
 - **Twilio/local SMS** for OTP verification
 - **Google Maps API** for location services and routing
 
 **Security & Compliance:**
+
 - **NextAuth.js** for authentication with multiple providers
 - **bcrypt** for password hashing
 - **Rate limiting** via middleware for API protection
@@ -157,6 +171,7 @@ I want **a fully configured Next.js project with essential dependencies and deve
 so that **I can begin building features with proper tooling, testing, and deployment pipeline in place**.
 
 #### Acceptance Criteria
+
 1. Next.js 15 project initialized with TypeScript configuration
 2. Tailwind CSS and shadcn/ui components integrated and configured
 3. PostgreSQL database connection established with Prisma ORM
@@ -174,6 +189,7 @@ I want **to view an attractive landing page that explains Weda.lk's value propos
 so that **I can understand the platform's benefits and see what services are available in my area**.
 
 #### Acceptance Criteria
+
 1. Responsive landing page with hero section explaining police-verified service providers
 2. Service category grid displaying 6 main categories (plumbing, electrical, carpentry, cleaning, pest control, AC repair)
 3. Trust indicators section highlighting verification process and platform benefits
@@ -190,6 +206,7 @@ I want **to create an account and securely authenticate**,
 so that **I can access platform features appropriate to my role**.
 
 #### Acceptance Criteria
+
 1. Registration form with email, phone, password, and role selection (customer/provider)
 2. Email and SMS OTP verification for account activation
 3. NextAuth.js integration with email/password and Google OAuth providers
@@ -207,6 +224,7 @@ I want **to upload my police clearance certificate and professional documents**,
 so that **I can begin the verification process to join the platform**.
 
 #### Acceptance Criteria
+
 1. Secure file upload interface for PDF documents (police clearance, NIC, certifications)
 2. File validation ensuring PDF format, size limits (10MB max), and virus scanning
 3. AWS S3 integration for encrypted document storage with access controls
@@ -224,6 +242,7 @@ I want **to access a dashboard showing pending verification requests and basic p
 so that **I can manage service provider onboarding and monitor platform health**.
 
 #### Acceptance Criteria
+
 1. Admin login with separate authentication system and enhanced security
 2. Pending verifications dashboard listing new provider applications
 3. Document viewer for reviewing uploaded police clearances and certificates
@@ -247,6 +266,7 @@ I want **to create a comprehensive profile with my services, pricing, and portfo
 so that **customers can find me and understand my capabilities and credentials**.
 
 #### Acceptance Criteria
+
 1. Profile creation form with business information, service categories, and service areas
 2. Pricing structure setup with hourly rates and service-specific pricing
 3. Portfolio image upload with categorization by service type
@@ -264,6 +284,7 @@ I want **to search for service providers by location and service type**,
 so that **I can find qualified professionals near me for my specific needs**.
 
 #### Acceptance Criteria
+
 1. Location-based search using GPS detection or manual address entry
 2. Service category filtering with subcategory options
 3. Distance-based sorting with kilometer/mile radius selection
@@ -281,6 +302,7 @@ I want **to view detailed service provider profiles with verification status and
 so that **I can make informed decisions about which provider to book**.
 
 #### Acceptance Criteria
+
 1. Comprehensive provider profile page with verification badges prominently displayed
 2. Portfolio gallery with before/after photos and project descriptions
 3. Customer review and rating display with review filtering and sorting
@@ -298,6 +320,7 @@ I want **advanced filtering and sorting options for provider search results**,
 so that **I can quickly find providers that match my specific requirements and preferences**.
 
 #### Acceptance Criteria
+
 1. Multi-criteria filtering interface with real-time result updates
 2. Price range slider with minimum and maximum hourly rates
 3. Rating threshold filter with star rating selection
@@ -315,6 +338,7 @@ I want **to clearly see which service providers have been police-verified and pr
 so that **I can trust the providers I'm considering booking**.
 
 #### Acceptance Criteria
+
 1. Visual verification badge system with distinct icons for different verification types
 2. Police clearance verification badge with expiration date tracking
 3. Professional certification badges for specialized skills and qualifications
@@ -338,6 +362,7 @@ I want **to create a service booking request with specific date, time, and servi
 so that **I can schedule professional services that meet my needs**.
 
 #### Acceptance Criteria
+
 1. Booking request form with service selection, date/time picker, and detailed requirements
 2. Address input with Google Maps integration for accurate service location
 3. Estimated service duration and cost calculation based on provider rates
@@ -355,6 +380,7 @@ I want **to receive, review, and respond to booking requests with scheduling fle
 so that **I can manage my calendar and confirm services that fit my availability**.
 
 #### Acceptance Criteria
+
 1. Real-time booking request notifications via email and platform dashboard
 2. Booking request detail view with customer information and service requirements
 3. Provider response options (accept, decline, propose alternative time/price)
@@ -372,6 +398,7 @@ I want **to securely pay for services through the platform with multiple payment
 so that **I can complete transactions safely without handling cash or direct transfers**.
 
 #### Acceptance Criteria
+
 1. PayHere payment gateway integration as primary Sri Lankan payment processor
 2. Stripe integration for international cards and alternative payment methods
 3. Payment form with secure card input and validation
@@ -389,6 +416,7 @@ I want **payment to be held in escrow until service completion and satisfaction*
 so that **both parties are protected and payment is only released when work is completed**.
 
 #### Acceptance Criteria
+
 1. Escrow account creation automatically upon booking confirmation
 2. Payment hold mechanism preventing immediate provider payout
 3. Service completion confirmation workflow requiring customer approval
@@ -406,6 +434,7 @@ I want **to track booking status and communicate directly through the platform**
 so that **I can stay informed about service progress and coordinate details effectively**.
 
 #### Acceptance Criteria
+
 1. Booking status dashboard showing all active and completed bookings
 2. Status updates for each booking phase (requested, confirmed, in-progress, completed)
 3. In-platform messaging system between customers and providers
@@ -429,6 +458,7 @@ I want **to rate and review service providers after service completion**,
 so that **I can share my experience and help other customers make informed decisions**.
 
 #### Acceptance Criteria
+
 1. Review prompt automatically triggered 24 hours after service completion
 2. Five-star rating system with required overall rating and optional category-specific ratings
 3. Written review form with character limits and content moderation guidelines
@@ -446,6 +476,7 @@ I want **to rate and review customers after service completion**,
 so that **I can provide feedback about customer interactions and help other providers**.
 
 #### Acceptance Criteria
+
 1. Provider review interface accessible after service completion confirmation
 2. Customer rating system focusing on communication, payment promptness, and cooperation
 3. Private review system visible only to service providers for internal reference
@@ -463,6 +494,7 @@ I want **a comprehensive dashboard for managing all platform operations and user
 so that **I can maintain platform quality, resolve disputes, and monitor business performance**.
 
 #### Acceptance Criteria
+
 1. User management interface with customer and provider account controls
 2. Verification workflow dashboard with document review and approval processes
 3. Review moderation system with flagged content review and resolution
@@ -480,6 +512,7 @@ I want **detailed analytics and reporting on platform performance and user behav
 so that **I can make data-driven decisions for business growth and platform improvement**.
 
 #### Acceptance Criteria
+
 1. User acquisition tracking with registration sources and conversion funnels
 2. Transaction analytics showing booking volume, success rates, and revenue trends
 3. Provider performance metrics including response times, completion rates, and ratings
@@ -497,6 +530,7 @@ I want **systematic quality assurance processes and dispute resolution workflows
 so that **I can maintain high platform standards and resolve conflicts fairly**.
 
 #### Acceptance Criteria
+
 1. Provider performance monitoring with automatic alerts for declining ratings or completion rates
 2. Customer complaint tracking system with categorization and resolution workflows
 3. Dispute escalation process with clear timelines and communication protocols
@@ -512,24 +546,25 @@ so that **I can maintain high platform standards and resolve conflicts fairly**.
 ## Checklist Results Report
 
 ### Executive Summary
+
 - **Overall PRD Completeness:** 95%
 - **MVP Scope Appropriateness:** Just Right - Well-balanced for market entry
-- **Readiness for Architecture Phase:** Ready 
+- **Readiness for Architecture Phase:** Ready
 - **Most Critical Gaps:** Minor technical constraint details and testing strategy specifics
 
 ### Category Analysis Table
 
-| Category                         | Status  | Critical Issues |
-| -------------------------------- | ------- | --------------- |
-| 1. Problem Definition & Context  | PASS    | None - Clear market opportunity and user needs |
-| 2. MVP Scope Definition          | PASS    | Well-defined boundaries and validation approach |
-| 3. User Experience Requirements  | PASS    | Comprehensive mobile-first design goals |
-| 4. Functional Requirements       | PASS    | All core marketplace features covered |
-| 5. Non-Functional Requirements   | PARTIAL | Could expand on specific performance metrics |
-| 6. Epic & Story Structure        | PASS    | Logical sequencing with clear value delivery |
-| 7. Technical Guidance            | PARTIAL | Some integration details could be more specific |
+| Category                         | Status  | Critical Issues                                  |
+| -------------------------------- | ------- | ------------------------------------------------ |
+| 1. Problem Definition & Context  | PASS    | None - Clear market opportunity and user needs   |
+| 2. MVP Scope Definition          | PASS    | Well-defined boundaries and validation approach  |
+| 3. User Experience Requirements  | PASS    | Comprehensive mobile-first design goals          |
+| 4. Functional Requirements       | PASS    | All core marketplace features covered            |
+| 5. Non-Functional Requirements   | PARTIAL | Could expand on specific performance metrics     |
+| 6. Epic & Story Structure        | PASS    | Logical sequencing with clear value delivery     |
+| 7. Technical Guidance            | PARTIAL | Some integration details could be more specific  |
 | 8. Cross-Functional Requirements | PASS    | Data, integration, and operational needs covered |
-| 9. Clarity & Communication       | PASS    | Well-structured and stakeholder-aligned |
+| 9. Clarity & Communication       | PASS    | Well-structured and stakeholder-aligned          |
 
 ### Final Decision
 
@@ -540,7 +575,9 @@ so that **I can maintain high platform standards and resolve conflicts fairly**.
 ## Next Steps
 
 ### UX Expert Prompt
+
 "Design the user experience architecture for Weda.lk using the attached PRD. Focus on trust-building interfaces for the Sri Lankan market, mobile-first responsive design, and seamless provider discovery to booking workflows. Prioritize verification badge systems and bilingual accessibility."
 
 ### Architect Prompt
+
 "Create the technical architecture for Weda.lk marketplace platform using the attached PRD. Design a scalable Next.js/PostgreSQL system supporting 10K+ users, payment gateway integrations (PayHere/Stripe), document verification workflows, and geographic search capabilities. Ensure security compliance and deployment readiness."

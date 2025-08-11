@@ -9,6 +9,7 @@
 This document defines the comprehensive technical architecture for Weda.lk, Sri Lanka's leading trusted home services marketplace platform. The architecture is designed to support 10,000+ concurrent users, handle police-verified service provider onboarding, and facilitate secure transactions through an escrow payment system.
 
 ### Project Overview
+
 - **Platform Type:** Home Services Marketplace
 - **Target Market:** Sri Lanka (Western, Central, Southern provinces)
 - **Key Differentiator:** Police-verified service providers
@@ -18,10 +19,13 @@ This document defines the comprehensive technical architecture for Weda.lk, Sri 
 ## High Level Architecture
 
 ### Technical Summary
+
 Modern full-stack web application built with Next.js 15, leveraging server-side rendering for SEO optimization and optimal performance. The architecture follows a monolithic-first approach with modular design patterns, enabling rapid development while maintaining clear separation of concerns for future microservices migration.
 
 ### Platform Choice
+
 **Vercel + PostgreSQL + Redis Stack**
+
 - **Frontend/Backend:** Next.js 15 with API Routes
 - **Database:** PostgreSQL (managed service)
 - **Caching:** Redis for sessions and frequently accessed data
@@ -29,9 +33,11 @@ Modern full-stack web application built with Next.js 15, leveraging server-side 
 - **Deployment:** Vercel for auto-scaling and edge optimization
 
 ### Repository Structure
+
 **Monorepo Architecture** - Single repository containing frontend, backend, and shared utilities for simplified development workflow and dependency management.
 
 ### Architectural Patterns
+
 1. **Domain-Driven Design:** Core domains (Users, Services, Bookings, Payments, Reviews)
 2. **API-First Development:** RESTful APIs with OpenAPI documentation
 3. **Component-Based Frontend:** Reusable React components with shadcn/ui
@@ -40,24 +46,24 @@ Modern full-stack web application built with Next.js 15, leveraging server-side 
 
 ## Tech Stack
 
-| Category | Technology | Version | Rationale |
-|----------|------------|---------|-----------|
-| **Frontend Framework** | Next.js | 15.x | SSR/SSG capabilities, optimal SEO, API routes |
-| **Frontend Library** | React | 19.x | Component reusability, rich ecosystem |
-| **Language** | TypeScript | 5.x | Type safety, developer productivity |
-| **Styling** | Tailwind CSS | 3.x | Utility-first, rapid development |
-| **UI Components** | shadcn/ui | Latest | Consistent design system, accessibility |
-| **Database** | PostgreSQL | 15.x | ACID compliance, complex queries, reliability |
-| **Caching** | Redis | 7.x | Session management, fast data access |
-| **ORM** | Prisma | 5.x | Type-safe database access, migrations |
-| **Authentication** | NextAuth.js | 5.x | Multiple providers, secure session management |
-| **Payment Gateway** | PayHere/Stripe | Latest | Local market leader, international support |
-| **File Storage** | AWS S3 | Latest | Scalable document storage, CDN integration |
-| **Maps** | Google Maps API | Latest | Location services, geocoding |
-| **SMS/Email** | Twilio/SendGrid | Latest | OTP verification, notifications |
-| **Animation** | GSAP | 3.x | Smooth micro-interactions, trust-building |
-| **Testing** | Jest/Playwright | Latest | Unit testing, E2E testing |
-| **Deployment** | Vercel | Latest | Auto-scaling, edge optimization |
+| Category               | Technology      | Version | Rationale                                     |
+| ---------------------- | --------------- | ------- | --------------------------------------------- |
+| **Frontend Framework** | Next.js         | 15.x    | SSR/SSG capabilities, optimal SEO, API routes |
+| **Frontend Library**   | React           | 19.x    | Component reusability, rich ecosystem         |
+| **Language**           | TypeScript      | 5.x     | Type safety, developer productivity           |
+| **Styling**            | Tailwind CSS    | 3.x     | Utility-first, rapid development              |
+| **UI Components**      | shadcn/ui       | Latest  | Consistent design system, accessibility       |
+| **Database**           | PostgreSQL      | 15.x    | ACID compliance, complex queries, reliability |
+| **Caching**            | Redis           | 7.x     | Session management, fast data access          |
+| **ORM**                | Prisma          | 5.x     | Type-safe database access, migrations         |
+| **Authentication**     | NextAuth.js     | 5.x     | Multiple providers, secure session management |
+| **Payment Gateway**    | PayHere/Stripe  | Latest  | Local market leader, international support    |
+| **File Storage**       | AWS S3          | Latest  | Scalable document storage, CDN integration    |
+| **Maps**               | Google Maps API | Latest  | Location services, geocoding                  |
+| **SMS/Email**          | Twilio/SendGrid | Latest  | OTP verification, notifications               |
+| **Animation**          | GSAP            | 3.x     | Smooth micro-interactions, trust-building     |
+| **Testing**            | Jest/Playwright | Latest  | Unit testing, E2E testing                     |
+| **Deployment**         | Vercel          | Latest  | Auto-scaling, edge optimization               |
 
 ## Data Models
 
@@ -155,9 +161,11 @@ interface Review {
 ## API Specification
 
 ### RESTful API Design
+
 Base URL: `https://api.weda.lk/v1`
 
 #### Authentication Endpoints
+
 ```
 POST /auth/register
 POST /auth/login
@@ -167,6 +175,7 @@ DELETE /auth/logout
 ```
 
 #### User Management
+
 ```
 GET /users/profile
 PUT /users/profile
@@ -175,6 +184,7 @@ GET /users/{id}/public-profile
 ```
 
 #### Service Provider Management
+
 ```
 GET /providers/search
 GET /providers/{id}
@@ -186,6 +196,7 @@ GET /providers/analytics
 ```
 
 #### Booking Management
+
 ```
 POST /bookings
 GET /bookings
@@ -196,6 +207,7 @@ GET /bookings/{id}/messages
 ```
 
 #### Payment Processing
+
 ```
 POST /payments/create-intent
 POST /payments/confirm
@@ -205,6 +217,7 @@ GET /payments/escrow-balance
 ```
 
 #### Reviews & Ratings
+
 ```
 POST /reviews
 GET /reviews/provider/{id}
@@ -214,6 +227,7 @@ DELETE /reviews/{id}
 ```
 
 ### Real-time Events (WebSocket)
+
 ```typescript
 // Booking status updates
 BookingStatusChanged {
@@ -243,6 +257,7 @@ ProviderLocationUpdate {
 ### Frontend Components
 
 #### Core UI Components
+
 ```typescript
 // Trust & Verification
 <TrustBadge variant="police-verified" />
@@ -270,6 +285,7 @@ ProviderLocationUpdate {
 ### Backend Services
 
 #### Service Architecture
+
 ```typescript
 // Domain Services
 class UserService {
@@ -308,17 +324,18 @@ class NotificationService {
 
 ### Third-Party Integrations
 
-| Service | Purpose | Integration Method | Fallback Strategy |
-|---------|---------|-------------------|-------------------|
-| **PayHere** | Primary payment gateway | REST API, webhook | Stripe as secondary |
-| **Stripe** | International payments | REST API, webhook | PayHere for local cards |
-| **Google Maps** | Location services, geocoding | JavaScript API, REST | Manual address input |
-| **Twilio** | SMS for OTP verification | REST API | Local SMS provider |
-| **SendGrid** | Email notifications | REST API | SMTP fallback |
-| **AWS S3** | Document storage | SDK | Local file storage |
-| **CloudFront** | CDN for static assets | SDK | Direct S3 serving |
+| Service         | Purpose                      | Integration Method   | Fallback Strategy       |
+| --------------- | ---------------------------- | -------------------- | ----------------------- |
+| **PayHere**     | Primary payment gateway      | REST API, webhook    | Stripe as secondary     |
+| **Stripe**      | International payments       | REST API, webhook    | PayHere for local cards |
+| **Google Maps** | Location services, geocoding | JavaScript API, REST | Manual address input    |
+| **Twilio**      | SMS for OTP verification     | REST API             | Local SMS provider      |
+| **SendGrid**    | Email notifications          | REST API             | SMTP fallback           |
+| **AWS S3**      | Document storage             | SDK                  | Local file storage      |
+| **CloudFront**  | CDN for static assets        | SDK                  | Direct S3 serving       |
 
 ### Integration Architecture
+
 ```typescript
 // Payment Gateway Abstraction
 interface PaymentGateway {
@@ -338,9 +355,7 @@ class StripeGateway implements PaymentGateway {
 // Gateway Factory
 class PaymentGatewayFactory {
   static create(preferredGateway: string): PaymentGateway {
-    return preferredGateway === 'payhere' ? 
-      new PayHereGateway() : 
-      new StripeGateway()
+    return preferredGateway === 'payhere' ? new PayHereGateway() : new StripeGateway()
   }
 }
 ```
@@ -348,6 +363,7 @@ class PaymentGatewayFactory {
 ## Core Workflows
 
 ### Service Booking Workflow
+
 ```mermaid
 sequenceDiagram
     participant C as Customer
@@ -374,6 +390,7 @@ sequenceDiagram
 ```
 
 ### Provider Verification Workflow
+
 ```mermaid
 sequenceDiagram
     participant P as Provider
@@ -514,6 +531,7 @@ CREATE INDEX idx_service_providers_location ON service_providers USING GIN(servi
 ## Frontend Architecture
 
 ### Component Organization
+
 ```
 src/
 ├── app/                    # Next.js 15 App Router
@@ -538,6 +556,7 @@ src/
 ```
 
 ### State Management
+
 ```typescript
 // Zustand for client state
 interface AppState {
@@ -552,7 +571,7 @@ const useProviders = (searchCriteria: SearchCriteria) => {
   return useQuery({
     queryKey: ['providers', searchCriteria],
     queryFn: () => searchProviders(searchCriteria),
-    staleTime: 5 * 60 * 1000 // 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 
@@ -566,6 +585,7 @@ const AppContext = createContext<{
 ```
 
 ### Routing Strategy
+
 ```typescript
 // App Router structure
 app/
@@ -587,6 +607,7 @@ app/
 ## Backend Architecture
 
 ### Service Layer Architecture
+
 ```typescript
 // Repository Pattern for data access
 interface UserRepository {
@@ -617,16 +638,17 @@ class BookingService {
 // app/api/bookings/route.ts
 export async function POST(request: Request) {
   const session = await getServerSession()
-  if (!session) return NextResponse.json({error: 'Unauthorized'}, {status: 401})
-  
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const bookingData = await request.json()
   const booking = await bookingService.createBooking(bookingData)
-  
+
   return NextResponse.json(booking)
 }
 ```
 
 ### Authentication Strategy
+
 ```typescript
 // NextAuth.js configuration
 export const authOptions: NextAuthOptions = {
@@ -635,12 +657,12 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         const user = await verifyCredentials(credentials)
         return user || null
-      }
+      },
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!
-    })
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
   ],
   session: { strategy: 'jwt' },
   callbacks: {
@@ -651,19 +673,19 @@ export const authOptions: NextAuthOptions = {
     session: async ({ session, token }) => {
       session.user.role = token.role
       return session
-    }
-  }
+    },
+  },
 }
 
 // Role-based access control
 export const withAuth = (handler: NextApiHandler, allowedRoles: string[]) => {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions)
-    
+
     if (!session || !allowedRoles.includes(session.user.role)) {
       return res.status(403).json({ error: 'Forbidden' })
     }
-    
+
     return handler(req, res)
   }
 }
@@ -672,6 +694,7 @@ export const withAuth = (handler: NextApiHandler, allowedRoles: string[]) => {
 ## Unified Project Structure
 
 ### Monorepo Organization
+
 ```
 weda-lk/
 ├── .next/                     # Next.js build output
@@ -709,6 +732,7 @@ weda-lk/
 ## Development Workflow
 
 ### Local Development Setup
+
 ```bash
 # Environment setup
 npm install
@@ -736,6 +760,7 @@ npm run format
 ```
 
 ### Development Scripts
+
 ```json
 {
   "scripts": {
@@ -759,24 +784,27 @@ npm run format
 ## Deployment Architecture
 
 ### Production Environment (Vercel)
+
 ```yaml
 # vercel.json
 {
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "env": {
-    "DATABASE_URL": "@database-url",
-    "REDIS_URL": "@redis-url",
-    "NEXTAUTH_SECRET": "@nextauth-secret",
-    "PAYHERE_MERCHANT_ID": "@payhere-merchant-id",
-    "STRIPE_SECRET_KEY": "@stripe-secret-key"
-  }
+  'buildCommand': 'npm run build',
+  'devCommand': 'npm run dev',
+  'installCommand': 'npm install',
+  'framework': 'nextjs',
+  'env':
+    {
+      'DATABASE_URL': '@database-url',
+      'REDIS_URL': '@redis-url',
+      'NEXTAUTH_SECRET': '@nextauth-secret',
+      'PAYHERE_MERCHANT_ID': '@payhere-merchant-id',
+      'STRIPE_SECRET_KEY': '@stripe-secret-key',
+    },
 }
 ```
 
 ### CI/CD Pipeline
+
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy to Production
@@ -814,6 +842,7 @@ jobs:
 ## Security and Performance
 
 ### Security Requirements
+
 1. **Authentication & Authorization**
    - JWT tokens with secure httpOnly cookies
    - Role-based access control (RBAC)
@@ -839,6 +868,7 @@ jobs:
    - Escrow account audit trails
 
 ### Performance Optimization
+
 1. **Frontend Performance**
    - Next.js Image optimization
    - Code splitting and lazy loading
@@ -860,13 +890,14 @@ jobs:
 ## Testing Strategy
 
 ### Testing Pyramid
+
 ```typescript
 // Unit Tests (Jest)
 describe('BookingService', () => {
   it('should create booking with escrow payment', async () => {
     const bookingService = new BookingService(mockRepo, mockPayment, mockNotification)
     const booking = await bookingService.createBooking(mockBookingData)
-    
+
     expect(booking).toBeDefined()
     expect(mockPayment.createEscrow).toHaveBeenCalled()
   })
@@ -879,7 +910,7 @@ describe('Booking API', () => {
       .post('/api/bookings')
       .set('Authorization', `Bearer ${authToken}`)
       .send(bookingData)
-    
+
     expect(response.status).toBe(201)
     expect(response.body.id).toBeDefined()
   })
@@ -897,6 +928,7 @@ test('complete booking flow', async ({ page }) => {
 ```
 
 ### Test Coverage Goals
+
 - Unit Tests: 80% code coverage
 - Integration Tests: All API endpoints
 - E2E Tests: Critical user journeys
@@ -905,6 +937,7 @@ test('complete booking flow', async ({ page }) => {
 ## Monitoring and Observability
 
 ### Key Metrics
+
 1. **Business Metrics**
    - Booking conversion rate
    - Provider verification time
@@ -924,6 +957,7 @@ test('complete booking flow', async ({ page }) => {
    - Search result relevance
 
 ### Monitoring Stack
+
 ```typescript
 // Application monitoring
 import { Analytics } from '@vercel/analytics'
@@ -936,7 +970,7 @@ import * as Sentry from '@sentry/nextjs'
 const trackBookingCreated = (bookingId: string) => {
   analytics.track('Booking Created', {
     bookingId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   })
 }
 ```

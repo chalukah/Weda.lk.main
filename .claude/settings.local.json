@@ -6,7 +6,12 @@
       "Bash(npm install:*)",
       "WebFetch(domain:www.quickhelp.lk)",
       "WebFetch(domain:www.cbsl.gov.lk)",
-      "Bash(node tasks/create-doc.js:*)"
+      "Bash(node tasks/create-doc.js:*)",
+      "Bash(npx create-next-app:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npx prisma generate:*)"
     ],
     "deny": []
   }
