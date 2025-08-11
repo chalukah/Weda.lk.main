@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rmdir:*)",
+      "Bash(copy:*)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:www.quickhelp.lk)",
+      "WebFetch(domain:www.cbsl.gov.lk)",
+      "Bash(node tasks/create-doc.js:*)"
+    ],
+    "deny": []
+  }
+}
