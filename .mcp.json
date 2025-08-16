@@ -5,7 +5,37 @@
       "args": ["-y", "@supabase/mcp-server-supabase@latest", "--read-only"],
       "env": {
         "SUPABASE_ACCESS_TOKEN": "sbp_5a18d63d3f971f8a9bc0e094d9221c46e925b165",
-        "SUPABASE_PROJECT_URL": "https://your-project-ref.supabase.co"
+        "SUPABASE_PROJECT_URL": "https://kxkkquyymbqgwkbxralz.supabase.co",
+        "DATABASE_URL": "postgresql://postgres.kxkkquyymbqgwkbxralz:[YOUR_DB_PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres"
+      }
+    },
+    "upstash-redis": {
+      "command": "npx",
+      "args": ["-y", "@upstash/mcp-server@latest"],
+      "env": {
+        "UPSTASH_REDIS_REST_URL": "https://expert-halibut-6752.upstash.io",
+        "UPSTASH_REDIS_REST_TOKEN": "ARpgAAImcDExYWUxZDNjMzc0ZTQ0NGE5YTJkMjYyNTMyZjgwZDI5NXAxNjc1Mg"
+      }
+    },
+    "cloudinary": {
+      "command": "npx",
+      "args": ["-y", "@cloudinary/mcp-server@latest"],
+      "env": {
+        "CLOUDINARY_CLOUD_NAME": "your-cloud-name",
+        "CLOUDINARY_API_KEY": "123456789012345",
+        "CLOUDINARY_API_SECRET": "your-secret-key"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem@latest"],
+      "env": {}
+    },
+    "stripe": {
+      "command": "npx",
+      "args": ["-y", "@stripe/mcp-server@latest"],
+      "env": {
+        "STRIPE_SECRET_KEY": "sk_test_your-stripe-secret-key"
       }
     }
   }

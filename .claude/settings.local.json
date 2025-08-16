@@ -23,7 +23,11 @@
       "Bash(cp:*)",
       "Bash(ping:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(npm view:*)",
+      "Bash(npm search:*)",
+      "Bash(openssl rand:*)",
+      "WebSearch"
     ],
     "deny": []
   }
