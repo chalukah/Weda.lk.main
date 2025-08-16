@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getRedisStatus } from '@/lib/redis'
+import { validateEnvironment } from '@/lib/config'
 
 export async function GET() {
   const timestamp = new Date().toISOString()
@@ -23,12 +24,25 @@ export async function GET() {
     // Test Redis connection
     const redisStatus = await getRedisStatus()
 
+    // Validate environment configuration
+    const envValidation = validateEnvironment()
+
+    // Test service configurations
+    let servicesStatus: 'ok' | 'misconfigured' = 'ok'
+    if (!envValidation.isValid) {
+      servicesStatus = 'misconfigured'
+    }
+
     // Determine overall status
     let overallStatus: 'ok' | 'degraded' | 'down' = 'ok'
 
     if (dbStatus === 'disconnected' && redisStatus.status === 'disconnected') {
       overallStatus = 'down'
-    } else if (dbStatus === 'disconnected' || redisStatus.status === 'disconnected') {
+    } else if (
+      dbStatus === 'disconnected' ||
+      redisStatus.status === 'disconnected' ||
+      servicesStatus === 'misconfigured'
+    ) {
       overallStatus = 'degraded'
     }
 
@@ -41,6 +55,12 @@ export async function GET() {
       redis: {
         status: redisStatus.status,
         responseTime: redisStatus.responseTime,
+      },
+      services: {
+        status: servicesStatus,
+        config: envValidation.config,
+        missing: envValidation.missing,
+        missingOptional: envValidation.missingOptional,
       },
       timestamp,
     }

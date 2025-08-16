@@ -16,10 +16,12 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export function Hero() {
   const [showSearch, setShowSearch] = useState(false)
   const [currentTrustSlide, setCurrentTrustSlide] = useState(0)
+  const router = useRouter()
 
   const trustStats = [
     { icon: Shield, label: '500+', description: 'Police-Verified Providers' },
@@ -125,6 +127,7 @@ export function Hero() {
                 variant="outline"
                 size="lg"
                 className="border-white px-8 py-4 text-lg font-semibold text-white hover:bg-white/10"
+                onClick={() => router.push('/become-provider')}
               >
                 Join as Provider
                 <ArrowRight className="ml-2 h-5 w-5" />

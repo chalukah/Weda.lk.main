@@ -22,12 +22,13 @@ model User {
   updatedAt           DateTime           @updatedAt @map("updated_at")
 
   // Relations
-  profile          UserProfile?
-  serviceProvider  ServiceProvider?
-  customerBookings Booking[] @relation("CustomerBookings")
-  sentMessages     Message[]
-  reviewsGiven     Review[]  @relation("ReviewsGiven")
-  reviewsReceived  Review[]  @relation("ReviewsReceived")
+  profile              UserProfile?
+  serviceProvider      ServiceProvider?
+  subscription         Subscription?
+  customerConnections  ServiceConnection[] @relation("CustomerConnections")
+  sentMessages         Message[]
+  reviewsGiven         Review[]  @relation("ReviewsGiven")
+  reviewsReceived      Review[]  @relation("ReviewsReceived")
 
   @@map("users")
 }
@@ -60,11 +61,12 @@ model ServiceProvider {
   completedJobs       Int      @default(0) @map("completed_jobs")
   responseTimeMinutes Int      @default(0) @map("response_time_minutes")
   isActive            Boolean  @default(false) @map("is_active")
+  contactInfo         Json?    @map("contact_info")
 
   // Relations
   user                   User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   verificationDocuments  VerificationDocument[]
-  bookings               Booking[]
+  serviceConnections     ServiceConnection[]
 
   @@map("service_providers")
 }
@@ -86,82 +88,87 @@ model VerificationDocument {
   @@map("verification_documents")
 }
 
-// Booking & Transaction Domain
-model Booking {
-  id                   String         @id @default(cuid())
-  customerId           String         @map("customer_id")
-  providerId           String         @map("provider_id")
-  serviceDetails       Json           @map("service_details")
-  serviceLocation      Json           @map("service_location")
-  scheduledAt          DateTime       @map("scheduled_at")
-  durationMinutes      Int?           @map("duration_minutes")
-  status               BookingStatus  @default(PENDING)
-  pricing              Json
-  specialInstructions  String?        @map("special_instructions")
-  createdAt            DateTime       @default(now()) @map("created_at")
-  updatedAt            DateTime       @updatedAt @map("updated_at")
+// Service Connection Domain (No payment processing)
+model ServiceConnection {
+  id                   String                @id @default(cuid())
+  customerId           String                @map("customer_id")
+  providerId           String                @map("provider_id")
+  serviceDetails       Json                  @map("service_details")
+  serviceLocation      Json                  @map("service_location")
+  scheduledAt          DateTime?             @map("scheduled_at")
+  durationMinutes      Int?                  @map("duration_minutes")
+  status               ServiceConnectionStatus @default(REQUESTED)
+  agreedPrice          Decimal?              @map("agreed_price") @db.Decimal(10, 2)
+  specialInstructions  String?               @map("special_instructions")
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
 
   // Relations
-  customer       User           @relation("CustomerBookings", fields: [customerId], references: [id])
-  provider       ServiceProvider @relation(fields: [providerId], references: [userId])
-  paymentRecord  PaymentRecord?
-  messages       Message[]
-  reviews        Review[]
+  customer User            @relation("CustomerConnections", fields: [customerId], references: [id])
+  provider ServiceProvider @relation(fields: [providerId], references: [userId])
+  messages Message[]
+  reviews  Review[]
 
-  @@map("bookings")
+  @@map("service_connections")
 }
 
-model PaymentRecord {
-  id                    String        @id @default(cuid())
-  bookingId             String        @unique @map("booking_id")
-  amount                Decimal       @db.Decimal(10, 2)
-  platformFee           Decimal       @map("platform_fee") @db.Decimal(10, 2)
-  providerPayout        Decimal       @map("provider_payout") @db.Decimal(10, 2)
-  status                PaymentStatus @default(PENDING)
-  paymentGateway        String        @map("payment_gateway")
-  gatewayTransactionId  String?       @map("gateway_transaction_id")
-  escrowReleaseAt       DateTime?     @map("escrow_release_at")
-  createdAt             DateTime      @default(now()) @map("created_at")
+// Service transactions are now free - no payment records needed
+// Users pay only for platform access via subscriptions
+
+model Subscription {
+  id              String             @id @default(cuid())
+  userId          String             @unique @map("user_id")
+  planId          String             @map("plan_id")
+  status          SubscriptionStatus @default(TRIAL)
+  startDate       DateTime           @map("start_date")
+  endDate         DateTime           @map("end_date")
+  nextBillingDate DateTime           @map("next_billing_date")
+  autoRenew       Boolean            @default(false) @map("auto_renew")
+  paymentMethod   String?            @map("payment_method")
+  lastPaymentDate DateTime?          @map("last_payment_date")
+  paymentProof    String?            @map("payment_proof")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
 
   // Relations
-  booking Booking @relation(fields: [bookingId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("payment_records")
+  @@map("subscriptions")
 }
 
 // Communication
 model Message {
-  id          String      @id @default(cuid())
-  bookingId   String      @map("booking_id")
-  senderId    String      @map("sender_id")
-  content     String
-  messageType MessageType @default(TEXT) @map("message_type")
-  attachments Json?
-  createdAt   DateTime    @default(now()) @map("created_at")
+  id             String      @id @default(cuid())
+  connectionId   String      @map("connection_id")
+  senderId       String      @map("sender_id")
+  content        String
+  messageType    MessageType @default(TEXT) @map("message_type")
+  attachments    Json?
+  createdAt      DateTime    @default(now()) @map("created_at")
 
   // Relations
-  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  sender  User    @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  connection ServiceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  sender     User              @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
   @@map("messages")
 }
 
 // Reviews & Ratings
 model Review {
-  id         String   @id @default(cuid())
-  bookingId  String   @map("booking_id")
-  reviewerId String   @map("reviewer_id")
-  revieweeId String   @map("reviewee_id")
-  rating     Int      @db.SmallInt
-  comment    String?
-  photos     String[]
-  isVerified Boolean  @default(true) @map("is_verified")
-  createdAt  DateTime @default(now()) @map("created_at")
+  id             String   @id @default(cuid())
+  connectionId   String   @map("connection_id")
+  reviewerId     String   @map("reviewer_id")
+  revieweeId     String   @map("reviewee_id")
+  rating         Int      @db.SmallInt
+  comment        String?
+  photos         String[]
+  isVerified     Boolean  @default(true) @map("is_verified")
+  createdAt      DateTime @default(now()) @map("created_at")
 
   // Relations
-  booking  Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  reviewer User    @relation("ReviewsGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
-  reviewee User    @relation("ReviewsReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
+  connection ServiceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  reviewer   User              @relation("ReviewsGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewee   User              @relation("ReviewsReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
 }
@@ -189,22 +196,23 @@ enum DocumentType {
   TAX_REGISTRATION
 }
 
-enum BookingStatus {
-  PENDING
-  CONFIRMED
+// Removed BookingStatus - replaced with ServiceConnectionStatus
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PAYMENT_PENDING
+}
+
+enum ServiceConnectionStatus {
+  REQUESTED
+  ACCEPTED
   IN_PROGRESS
   COMPLETED
   CANCELLED
   DISPUTED
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  ESCROW_HELD
-  RELEASED
-  REFUNDED
-  FAILED
 }
 
 enum MessageType {

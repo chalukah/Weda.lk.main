@@ -20,4 +20,4 @@ export default {
     ],
     'subject-case': [2, 'never', ['sentence-case', 'start-case', 'pascal-case']],
   },
-};
+}

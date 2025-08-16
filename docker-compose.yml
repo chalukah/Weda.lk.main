@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: weda-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: weda_db
+      POSTGRES_USER: weda_user
+      POSTGRES_PASSWORD: weda_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    ports:
+      - '5432:5432'
+    networks:
+      - weda-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U weda_user -d weda_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: weda-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass redis_password
+    volumes:
+      - redis_data:/data
+    ports:
+      - '6379:6379'
+    networks:
+      - weda-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weda-app
+    restart: unless-stopped
+    environment:
+      # Database
+      DATABASE_URL: postgresql://weda_user:weda_password@postgres:5432/weda_db
+
+      # Redis
+      REDIS_URL: redis://:redis_password@redis:6379
+
+      # NextAuth
+      NEXTAUTH_SECRET: your-nextauth-secret-change-this
+      NEXTAUTH_URL: http://localhost:3000
+
+      # App Config
+      NODE_ENV: production
+      PORT: 3000
+
+      # External Services (set these in .env.local)
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - weda-network
+    volumes:
+      # Mount uploads directory if needed
+      - ./uploads:/app/uploads
+
+  # Prisma Studio (optional, for database management)
+  prisma-studio:
+    image: node:20-alpine
+    container_name: weda-prisma-studio
+    working_dir: /app
+    command: sh -c "npm install -g prisma && npx prisma studio --port 5555 --hostname 0.0.0.0"
+    environment:
+      DATABASE_URL: postgresql://weda_user:weda_password@postgres:5432/weda_db
+    ports:
+      - '5555:5555'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - weda-network
+    volumes:
+      - ./prisma:/app/prisma
+    profiles:
+      - tools
+
+networks:
+  weda-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

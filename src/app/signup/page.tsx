@@ -5,14 +5,85 @@ import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { Eye, EyeOff, Phone, Mail, User, Users } from 'lucide-react'
+import { Eye, EyeOff, User, Users } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [userType, setUserType] = useState<'customer' | 'provider'>('customer')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    const formData = new FormData(e.currentTarget)
+    const firstName = formData.get('firstName') as string
+    const lastName = formData.get('lastName') as string
+    const email = formData.get('email') as string
+    const phone = formData.get('phone') as string
+    const password = formData.get('password') as string
+    const confirmPassword = formData.get('confirmPassword') as string
+    const terms = formData.get('terms') as string
+
+    // Validation
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      setLoading(false)
+      return
+    }
+
+    if (!terms) {
+      setError('Please agree to the Terms of Service and Privacy Policy')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          phone,
+          password,
+          userType,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccess('Account created successfully! Redirecting to login...')
+        setTimeout(() => {
+          router.push('/login')
+        }, 2000)
+      } else {
+        setError(data.error || 'An error occurred during registration')
+      }
+    } catch {
+      setError('An error occurred. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleSignUp = () => {
+    signIn('google', { callbackUrl: '/dashboard' })
+  }
 
   return (
     <div className="bg-background min-h-screen">
@@ -31,6 +102,7 @@ export default function SignupPage() {
                 <label className="text-sm font-medium">I want to</label>
                 <div className="bg-muted grid grid-cols-2 gap-2 rounded-lg p-1">
                   <Button
+                    type="button"
                     variant={userType === 'customer' ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => setUserType('customer')}
@@ -40,6 +112,7 @@ export default function SignupPage() {
                     <span>Find Services</span>
                   </Button>
                   <Button
+                    type="button"
                     variant={userType === 'provider' ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => setUserType('provider')}
@@ -51,22 +124,36 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <form className="space-y-4">
+              {error && (
+                <div className="bg-destructive/10 text-destructive rounded-md p-3 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">{success}</div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Name Input */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">First Name</label>
                     <input
+                      name="firstName"
                       type="text"
                       placeholder="John"
+                      required
                       className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Last Name</label>
                     <input
+                      name="lastName"
                       type="text"
                       placeholder="Doe"
+                      required
                       className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                   </div>
@@ -80,8 +167,10 @@ export default function SignupPage() {
                       <span className="text-sm">+94</span>
                     </div>
                     <input
+                      name="phone"
                       type="tel"
-                      placeholder="77 123 4567"
+                      placeholder="771234567"
+                      required
                       className="border-input bg-background ring-offset-background focus-visible:ring-ring flex-1 rounded-r-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                   </div>
@@ -91,8 +180,10 @@ export default function SignupPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Email Address</label>
                   <input
+                    name="email"
                     type="email"
                     placeholder="your@email.com"
+                    required
                     className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
                   />
                 </div>
@@ -102,8 +193,10 @@ export default function SignupPage() {
                   <label className="text-sm font-medium">Password</label>
                   <div className="relative">
                     <input
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Create a strong password"
+                      placeholder="Create a strong password (min. 8 characters)"
+                      required
                       className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 pr-10 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                     <button
@@ -121,8 +214,10 @@ export default function SignupPage() {
                   <label className="text-sm font-medium">Confirm Password</label>
                   <div className="relative">
                     <input
+                      name="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Confirm your password"
+                      required
                       className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 pr-10 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                     <button
@@ -141,14 +236,20 @@ export default function SignupPage() {
 
                 {/* Terms & Conditions */}
                 <div className="flex items-start space-x-2">
-                  <input type="checkbox" id="terms" className="mt-1 h-4 w-4" />
+                  <input
+                    name="terms"
+                    type="checkbox"
+                    id="terms"
+                    className="mt-1 h-4 w-4"
+                    required
+                  />
                   <label htmlFor="terms" className="text-muted-foreground text-sm">
                     I agree to the{' '}
-                    <Link href="#" className="text-primary hover:underline">
+                    <Link href="/terms" className="text-primary hover:underline">
                       Terms of Service
                     </Link>{' '}
                     and{' '}
-                    <Link href="#" className="text-primary hover:underline">
+                    <Link href="/privacy" className="text-primary hover:underline">
                       Privacy Policy
                     </Link>
                   </label>
@@ -156,15 +257,15 @@ export default function SignupPage() {
 
                 {/* Marketing Consent */}
                 <div className="flex items-start space-x-2">
-                  <input type="checkbox" id="marketing" className="mt-1 h-4 w-4" />
+                  <input name="marketing" type="checkbox" id="marketing" className="mt-1 h-4 w-4" />
                   <label htmlFor="marketing" className="text-muted-foreground text-sm">
                     I'd like to receive updates and marketing communications via email
                   </label>
                 </div>
 
                 {/* Sign Up Button */}
-                <Button type="submit" className="w-full">
-                  Create Account
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Creating Account...' : 'Create Account'}
                 </Button>
               </form>
 
@@ -178,8 +279,8 @@ export default function SignupPage() {
               </div>
 
               {/* Social Signup */}
-              <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="w-full">
+              <div className="grid grid-cols-1 gap-4">
+                <Button variant="outline" className="w-full" onClick={handleGoogleSignUp}>
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -198,13 +299,7 @@ export default function SignupPage() {
                       fill="#EA4335"
                     />
                   </svg>
-                  Google
-                </Button>
-                <Button variant="outline" className="w-full">
-                  <svg className="mr-2 h-4 w-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                  Facebook
+                  Continue with Google
                 </Button>
               </div>
 

@@ -8,10 +8,47 @@ import { Separator } from '@/components/ui/separator'
 import { Eye, EyeOff, Phone, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loginMethod, setLoginMethod] = useState<'phone' | 'email'>('phone')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError('Invalid email or password')
+      } else {
+        router.push('/dashboard')
+      }
+    } catch {
+      setError('An error occurred. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleSignIn = () => {
+    signIn('google', { callbackUrl: '/dashboard' })
+  }
 
   return (
     <div className="bg-background min-h-screen">
@@ -47,32 +84,23 @@ export default function LoginPage() {
                 </Button>
               </div>
 
-              <form className="space-y-4">
-                {/* Phone/Email Input */}
+              {error && (
+                <div className="bg-destructive/10 text-destructive rounded-md p-3 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Email Input - Always use email for login */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {loginMethod === 'phone' ? 'Phone Number' : 'Email Address'}
-                  </label>
-                  <div className="relative">
-                    {loginMethod === 'phone' ? (
-                      <div className="flex">
-                        <div className="bg-muted flex items-center rounded-l-md border border-r-0 px-3">
-                          <span className="text-sm">+94</span>
-                        </div>
-                        <input
-                          type="tel"
-                          placeholder="77 123 4567"
-                          className="border-input bg-background ring-offset-background focus-visible:ring-ring flex-1 rounded-r-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
-                        />
-                      </div>
-                    ) : (
-                      <input
-                        type="email"
-                        placeholder="your@email.com"
-                        className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
-                      />
-                    )}
-                  </div>
+                  <label className="text-sm font-medium">Email Address</label>
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    required
+                    className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
+                  />
                 </div>
 
                 {/* Password Input */}
@@ -80,8 +108,10 @@ export default function LoginPage() {
                   <label className="text-sm font-medium">Password</label>
                   <div className="relative">
                     <input
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
+                      required
                       className="border-input bg-background ring-offset-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 pr-10 text-sm focus-visible:ring-2 focus-visible:outline-none"
                     />
                     <button
@@ -108,8 +138,8 @@ export default function LoginPage() {
                 </div>
 
                 {/* Login Button */}
-                <Button type="submit" className="w-full">
-                  Sign In
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Signing In...' : 'Sign In'}
                 </Button>
               </form>
 
@@ -123,8 +153,8 @@ export default function LoginPage() {
               </div>
 
               {/* Social Login */}
-              <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="w-full">
+              <div className="grid grid-cols-1 gap-4">
+                <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -143,13 +173,7 @@ export default function LoginPage() {
                       fill="#EA4335"
                     />
                   </svg>
-                  Google
-                </Button>
-                <Button variant="outline" className="w-full">
-                  <svg className="mr-2 h-4 w-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                  Facebook
+                  Continue with Google
                 </Button>
               </div>
 

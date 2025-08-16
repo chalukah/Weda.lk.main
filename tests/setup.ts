@@ -1,22 +1,27 @@
 import '@testing-library/jest-dom'
 
+declare global {
+  var IntersectionObserver: typeof IntersectionObserver
+  var ResizeObserver: typeof ResizeObserver
+}
+
 // Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  root: Element | null = null
+globalThis.IntersectionObserver = class IntersectionObserver {
+  root: globalThis.Element | null = null
   rootMargin: string = '0px'
   thresholds: ReadonlyArray<number> = [0]
-  
+
   constructor() {}
   disconnect() {}
   observe() {}
   unobserve() {}
-  takeRecords(): IntersectionObserverEntry[] {
+  takeRecords(): globalThis.IntersectionObserverEntry[] {
     return []
   }
 }
 
 // Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
+globalThis.ResizeObserver = class ResizeObserver {
   constructor() {}
   disconnect() {}
   observe() {}
@@ -24,13 +29,13 @@ global.ResizeObserver = class ResizeObserver {
 }
 
 // Mock next/router
-jest.mock('next/router', () => ({
+globalThis.jest.mock('next/router', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
-    back: jest.fn(),
-    reload: jest.fn(),
+    push: globalThis.jest.fn(),
+    replace: globalThis.jest.fn(),
+    prefetch: globalThis.jest.fn(),
+    back: globalThis.jest.fn(),
+    reload: globalThis.jest.fn(),
     route: '/',
     pathname: '/',
     query: {},
@@ -39,15 +44,15 @@ jest.mock('next/router', () => ({
 }))
 
 // Mock next/navigation
-jest.mock('next/navigation', () => ({
+globalThis.jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
-    back: jest.fn(),
-    forward: jest.fn(),
-    refresh: jest.fn(),
+    push: globalThis.jest.fn(),
+    replace: globalThis.jest.fn(),
+    prefetch: globalThis.jest.fn(),
+    back: globalThis.jest.fn(),
+    forward: globalThis.jest.fn(),
+    refresh: globalThis.jest.fn(),
   }),
   usePathname: () => '/',
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => new globalThis.URLSearchParams(),
 }))

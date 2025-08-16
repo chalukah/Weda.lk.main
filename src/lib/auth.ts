@@ -1,12 +1,18 @@
 import { NextAuthOptions } from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
 import { prisma } from '@/lib/db'
 import { UserRole, VerificationStatus } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -28,9 +34,11 @@ export const authOptions: NextAuthOptions = {
             return null
           }
 
-          // In a real app, verify the password with bcrypt
-          // const isValid = await bcrypt.compare(credentials.password, user.passwordHash)
-          // For now, we'll skip password verification for development
+          const isValid = await bcrypt.compare(credentials.password, user.passwordHash)
+
+          if (!isValid) {
+            return null
+          }
 
           return {
             id: user.id,
@@ -68,7 +76,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: '/auth/signin',
+    signIn: '/login',
   },
   debug: process.env.NODE_ENV === 'development',
 }

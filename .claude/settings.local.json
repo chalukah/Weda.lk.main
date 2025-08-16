@@ -12,7 +12,18 @@
       "Bash(npx shadcn@latest add:*)",
       "Bash(npx prettier:*)",
       "Bash(npx prisma generate:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run:*)",
+      "Bash(docker:*)",
+      "Bash(command -v:*)",
+      "Bash(command -v npx)",
+      "Bash(where:*)",
+      "Bash(winget install:*)",
+      "Bash(ln:*)",
+      "Bash(cp:*)",
+      "Bash(ping:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx eslint:*)"
     ],
     "deny": []
   }

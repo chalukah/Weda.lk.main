@@ -1,24 +1,25 @@
 import { Separator } from '@/components/ui/separator'
 import { Home, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
+import Link from 'next/link'
 
 const footerLinks = {
   company: [
     { name: 'About Us', href: '/about' },
-    { name: 'Our Team', href: '/team' },
-    { name: 'Careers', href: '/careers' },
-    { name: 'Press', href: '/press' },
+    { name: 'How it Works', href: '/how-it-works' },
+    { name: 'Become Provider', href: '/become-provider' },
+    { name: 'Demo', href: '/demo' },
   ],
   services: [
-    { name: 'Property Listings', href: '/listings' },
-    { name: 'Virtual Tours', href: '/virtual-tours' },
-    { name: 'Market Analysis', href: '/market-analysis' },
-    { name: 'Agent Tools', href: '/agent-tools' },
+    { name: 'Find Services', href: '/services' },
+    { name: 'Home Cleaning', href: '/services?category=cleaning' },
+    { name: 'Handyman', href: '/services?category=handyman' },
+    { name: 'Beauty & Wellness', href: '/services?category=beauty' },
   ],
   support: [
     { name: 'Help Center', href: '/help' },
     { name: 'Contact Us', href: '/contact' },
-    { name: 'Documentation', href: '/docs' },
-    { name: 'API', href: '/api' },
+    { name: 'FAQ', href: '/faq' },
+    { name: 'Support', href: '/support' },
   ],
   legal: [
     { name: 'Privacy Policy', href: '/privacy' },
@@ -29,10 +30,10 @@ const footerLinks = {
 }
 
 const socialLinks = [
-  { name: 'Facebook', icon: Facebook, href: 'https://facebook.com' },
-  { name: 'Twitter', icon: Twitter, href: 'https://twitter.com' },
-  { name: 'Instagram', icon: Instagram, href: 'https://instagram.com' },
-  { name: 'LinkedIn', icon: Linkedin, href: 'https://linkedin.com' },
+  { name: 'Facebook', icon: Facebook, href: 'https://facebook.com/weda.lk' },
+  { name: 'Twitter', icon: Twitter, href: 'https://twitter.com/weda_lk' },
+  { name: 'Instagram', icon: Instagram, href: 'https://instagram.com/weda.lk' },
+  { name: 'LinkedIn', icon: Linkedin, href: 'https://linkedin.com/company/weda-lk' },
 ]
 
 export default function Footer() {
@@ -48,8 +49,8 @@ export default function Footer() {
               <span className="text-2xl font-bold">වැඩ.lk</span>
             </div>
             <p className="mb-6 max-w-sm text-gray-400">
-              Sri Lanka's premier real estate platform, connecting buyers, sellers, and agents with
-              innovative technology and exceptional service.
+              Sri Lanka's premier service marketplace, connecting customers with trusted service
+              providers across the country with innovative technology and exceptional service.
             </p>
 
             {/* Contact Info */}
@@ -75,12 +76,12 @@ export default function Footer() {
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-gray-400 transition-colors duration-200 hover:text-white"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -91,12 +92,12 @@ export default function Footer() {
             <ul className="space-y-2">
               {footerLinks.services.map((link) => (
                 <li key={link.name}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-gray-400 transition-colors duration-200 hover:text-white"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -107,12 +108,12 @@ export default function Footer() {
             <ul className="space-y-2">
               {footerLinks.support.map((link) => (
                 <li key={link.name}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-gray-400 transition-colors duration-200 hover:text-white"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -123,12 +124,12 @@ export default function Footer() {
             <ul className="space-y-2">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-gray-400 transition-colors duration-200 hover:text-white"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -151,6 +152,8 @@ export default function Footer() {
                 <a
                   key={social.name}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 transition-colors duration-200 hover:text-white"
                   aria-label={social.name}
                 >

@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # Development Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: weda-app-dev
+    command: npm run dev
+    environment:
+      # Database
+      DATABASE_URL: postgresql://weda_user:weda_password@postgres:5432/weda_db
+      
+      # Redis
+      REDIS_URL: redis://:redis_password@redis:6379
+      
+      # NextAuth
+      NEXTAUTH_SECRET: dev-secret-change-this-in-production
+      NEXTAUTH_URL: http://localhost:3000
+      
+      # Development settings
+      NODE_ENV: development
+      LOG_LEVEL: debug
+      
+      # Load external services from .env.local
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-noreply@localhost}
+      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:-}
+      NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - weda-network
+    restart: unless-stopped
+
+  # PostgreSQL Database (inherited from main docker-compose.yml)
+  postgres:
+    extends:
+      file: docker-compose.yml
+      service: postgres
+
+  # Redis Cache (inherited from main docker-compose.yml)  
+  redis:
+    extends:
+      file: docker-compose.yml
+      service: redis
