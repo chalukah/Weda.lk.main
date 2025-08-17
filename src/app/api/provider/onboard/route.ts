@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { createClient } from '@supabase/supabase-js'
+import { PrismaClient } from '@prisma/client'
 import { authOptions } from '@/lib/auth'
 
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,31 +26,44 @@ export async function POST(request: NextRequest) {
       userEmail,
     } = formData
 
-    // Get user ID from Supabase
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', userEmail)
-      .single()
+    // Get user by email
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+      include: { profile: true },
+    })
 
-    if (userError || !userData) {
+    if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Update user phone if provided
     if (phone) {
-      await supabase.from('users').update({ phone }).eq('id', userData.id)
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { phone },
+      })
     }
 
-    // Update or create service provider profile
-    const { data: providerData, error: providerError } = await supabase
-      .from('service_providers')
-      .upsert({
-        user_id: userData.id,
-        business_name: businessName,
-        description: description,
-        services: services,
-        service_areas: {
+    // Create or update user profile
+    await prisma.userProfile.upsert({
+      where: { userId: user.id },
+      create: {
+        userId: user.id,
+        firstName: formData.firstName || '',
+        lastName: formData.lastName || '',
+      },
+      update: {},
+    })
+
+    // Create or update service provider profile
+    const serviceProvider = await prisma.serviceProvider.upsert({
+      where: { userId: user.id },
+      create: {
+        userId: user.id,
+        businessName,
+        description,
+        services,
+        serviceAreas: {
           districts: serviceAreas,
           experience: experience,
           certifications: certifications || '',
@@ -59,42 +72,40 @@ export async function POST(request: NextRequest) {
         pricing: {},
         availability: {},
         rating: 0,
-        completed_jobs: 0,
-        response_time_minutes: 0,
-        is_active: false, // Will be activated after admin approval
-      })
-      .select()
-      .single()
-
-    if (providerError) {
-      console.error('Error creating/updating provider profile:', providerError)
-      return NextResponse.json({ error: 'Failed to create provider profile' }, { status: 500 })
-    }
-
-    // Create notification for admin review
-    await supabase
-      .from('admin_notifications')
-      .insert({
-        type: 'NEW_PROVIDER_REGISTRATION',
-        title: `New Provider Registration: ${businessName}`,
-        message: `${businessName} has completed their registration and is ready for review.`,
-        data: {
-          providerId: userData.id,
-          businessName: businessName,
-          services: services,
-          serviceAreas: serviceAreas,
+        completedJobs: 0,
+        responseTimeMinutes: 0,
+        isActive: false, // Will be activated after admin approval
+        contactInfo: phone ? { phone } : {},
+      },
+      update: {
+        businessName,
+        description,
+        services,
+        serviceAreas: {
+          districts: serviceAreas,
+          experience: experience,
+          certifications: certifications || '',
+          languages: languages,
         },
-        is_read: false,
-      })
-      .select()
+        contactInfo: phone ? { phone } : {},
+      },
+    })
+
+    // Update user role to PROVIDER
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { role: 'PROVIDER' },
+    })
 
     return NextResponse.json({
       success: true,
       message: 'Provider onboarding completed successfully',
-      providerId: userData.id,
+      providerId: user.id,
     })
   } catch (error) {
     console.error('Error in provider onboarding API:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } finally {
+    await prisma.$disconnect()
   }
 }

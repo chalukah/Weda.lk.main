@@ -198,7 +198,7 @@ export default function ProviderOnboardingPage() {
                 {currentStep === 2 && <MapPin className="mr-2" />}
                 {currentStep === 3 && <User className="mr-2" />}
                 {currentStep === 4 && <CheckCircle className="mr-2" />}
-                {steps[currentStep - 1].title}
+                {steps[currentStep - 1]?.title}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">

@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user, account }) {
       if (user) {
-        token.provider = account?.provider
+        token.provider = account?.provider ?? 'credentials'
       }
 
       // Fetch fresh user data from Supabase

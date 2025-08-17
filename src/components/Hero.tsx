@@ -21,7 +21,12 @@ import { useRouter } from 'next/navigation'
 export function Hero() {
   const [showSearch, setShowSearch] = useState(false)
   const [currentTrustSlide, setCurrentTrustSlide] = useState(0)
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const trustStats = [
     { icon: Shield, label: '500+', description: 'Police-Verified Providers' },
@@ -72,243 +77,116 @@ export function Hero() {
 
   // Auto-rotate trust slides
   useEffect(() => {
+    if (!mounted) return
+
     const interval = setInterval(() => {
       setCurrentTrustSlide((prev) => (prev + 1) % trustSlides.length)
     }, 4000)
     return () => clearInterval(interval)
-  }, [trustSlides.length])
+  }, [trustSlides.length, mounted])
 
   return (
-    <section className="from-primary via-secondary to-accent relative min-h-screen bg-gradient-to-br">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
-      <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
+    <section className="relative min-h-screen overflow-hidden bg-white">
+      {/* Hero Image Background - positioned on the right side */}
+      <div className="absolute top-0 right-0 hidden h-full w-1/2 lg:block">
+        <div className="relative h-full w-full">
+          <img
+            src="/hero-service-professionals.jpg"
+            alt="Professional service providers at work - electrician and technician installing lighting fixtures"
+            className="h-full w-full object-cover object-center"
+            loading="eager"
+            fetchPriority="high"
+          />
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-white/20" />
+        </div>
+      </div>
 
       <div className="relative z-10 container mx-auto px-4 py-16 lg:py-24">
         <div className="grid min-h-[80vh] items-center gap-12 lg:grid-cols-2">
-          {/* Left Column - Hero Content */}
-          <div className="space-y-8">
-            {/* Trust Badge */}
-            <div className="animate-trust-badge inline-flex items-center space-x-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-              <Shield className="h-4 w-4 text-white" />
-              <span className="text-sm font-medium text-white">Security guaranteed</span>
-            </div>
+          {/* Left Column - Hero Content with Background */}
+          <div className="lg:pr-8">
+            <div className="from-primary via-secondary to-accent space-y-8 rounded-3xl bg-gradient-to-br p-8 text-white shadow-2xl lg:p-12">
+              {/* Trust Badge */}
+              <div className="animate-trust-badge inline-flex items-center space-x-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
+                <Shield className="h-4 w-4 text-white" />
+                <span className="text-sm font-medium text-white">Security guaranteed</span>
+              </div>
 
-            {/* Main Heading */}
-            <div className="space-y-4">
-              <h1 className="text-4xl leading-tight font-bold text-white md:text-5xl lg:text-6xl">
-                Trusted Home
-                <br />
-                Services in
-                <br />
-                <span className="text-yellow-300">Sri Lanka</span>
-              </h1>
-              <p className="max-w-xl text-lg text-white/90 md:text-xl">
-                Connect with <span className="font-semibold text-yellow-300">police-verified</span>,
-                skilled service providers for all your home maintenance needs.{' '}
-                <span className="font-semibold text-yellow-300">
-                  Safe, reliable, and transparent
-                </span>{' '}
-                pricing.
-              </p>
-            </div>
+              {/* Main Heading */}
+              <div className="space-y-4">
+                <h1 className="text-3xl leading-tight font-bold text-white md:text-4xl lg:text-5xl">
+                  Trusted Home Services in <span className="text-yellow-300">Sri Lanka</span>
+                </h1>
+                <p className="text-base leading-relaxed text-white/95 md:text-lg">
+                  Connect with{' '}
+                  <span className="font-semibold text-yellow-300">police-verified</span>, skilled
+                  professionals for all your home maintenance needs.{' '}
+                  <span className="font-semibold text-yellow-300">
+                    Safe, reliable, and transparent
+                  </span>{' '}
+                  pricing with guaranteed quality service.
+                </p>
+              </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <Button
-                size="lg"
-                className="text-primary bg-white px-8 py-4 text-lg font-semibold hover:bg-white/90"
-                onClick={() => setShowSearch(true)}
-              >
-                <Search className="mr-2 h-5 w-5" />
-                Find Services
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white px-8 py-4 text-lg font-semibold text-white hover:bg-white/10"
-                onClick={() => router.push('/become-provider')}
-              >
-                Join as Provider
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
+              {/* CTA Buttons */}
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button
+                  size="lg"
+                  className="text-primary bg-white px-6 py-3 text-base font-semibold shadow-lg hover:bg-gray-100"
+                  onClick={() => router.push('/search')}
+                >
+                  <Search className="mr-2 h-4 w-4" />
+                  Find Services
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="hover:text-primary border-2 border-white/30 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white"
+                  onClick={() => router.push('/become-provider')}
+                >
+                  Join as Provider
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
 
-            {/* Trust Statistics */}
-            <div className="grid grid-cols-2 gap-4 pt-4 md:grid-cols-4">
-              {trustStats.map((stat, index) => {
-                const Icon = stat.icon
-                return (
-                  <div key={index} className="text-center">
-                    <div className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
-                      <Icon className="h-5 w-5 text-white" />
+              {/* Trust Statistics */}
+              <div className="grid grid-cols-2 gap-4 pt-4 md:grid-cols-4">
+                {trustStats.map((stat, index) => {
+                  const Icon = stat.icon
+                  return (
+                    <div key={index} className="text-center">
+                      <div className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+                        <Icon className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="text-xl font-bold text-white lg:text-2xl">{stat.label}</div>
+                      <div className="text-xs text-white/80">{stat.description}</div>
                     </div>
-                    <div className="text-2xl font-bold text-white">{stat.label}</div>
-                    <div className="text-xs text-white/70">{stat.description}</div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Right Column - Service Categories & Search */}
-          <div className="space-y-6">
-            {showSearch ? (
-              <Card className="bg-white shadow-lg backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900">Find Your Service</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowSearch(false)}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      ×
-                    </Button>
+          {/* Right Column - Mobile Image */}
+          <div className="lg:hidden">
+            <div className="overflow-hidden rounded-2xl shadow-xl">
+              <div className="relative h-64 w-full">
+                <img
+                  src="/hero-service-professionals.jpg"
+                  alt="Professional service providers at work - electrician and technician installing lighting fixtures"
+                  className="h-full w-full object-cover"
+                  loading="eager"
+                />
+                <div className="from-primary/40 absolute inset-0 bg-gradient-to-t to-transparent" />
+                <div className="absolute right-4 bottom-4 left-4">
+                  <div className="rounded-lg bg-white/95 p-3 backdrop-blur-sm">
+                    <p className="text-sm font-medium text-gray-900">
+                      Trusted professionals verified by Sri Lankan Police
+                    </p>
                   </div>
-                  <ServiceSearch />
-                </CardContent>
-              </Card>
-            ) : (
-              <>
-                {/* Popular Services */}
-                <Card className="bg-white shadow-lg backdrop-blur-sm">
-                  <CardContent className="p-6">
-                    <div className="mb-4 flex items-center justify-between">
-                      <h3 className="font-semibold text-gray-900">Popular Services</h3>
-                      <Badge variant="secondary" className="bg-primary/20 text-primary font-medium">
-                        Most Requested
-                      </Badge>
-                    </div>
-
-                    <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      {serviceCategories.map((category, index) => (
-                        <button
-                          key={index}
-                          onClick={() => {
-                            // Show search with the selected category
-                            setShowSearch(true)
-                            // In a real app, this would filter by category
-                            // eslint-disable-next-line no-console
-                            console.log('Selected category:', category.name)
-                          }}
-                          className="hover:border-primary hover:bg-primary/10 hover-lift flex min-h-[48px] items-center space-x-3 rounded-lg border-2 border-gray-200 bg-white p-4 transition-all duration-200 hover:scale-105"
-                        >
-                          <span className="text-2xl">{category.icon}</span>
-                          <div className="text-left">
-                            <div className="text-sm font-semibold text-gray-900">
-                              {category.name}
-                            </div>
-                            {category.popular && (
-                              <Badge
-                                variant="outline"
-                                className="border-primary/50 text-primary mt-1 text-xs"
-                              >
-                                Popular
-                              </Badge>
-                            )}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-
-                    <Button className="w-full" onClick={() => setShowSearch(true)}>
-                      <Search className="mr-2 h-4 w-4" />
-                      Search All Services
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Trust Indicators Carousel */}
-                <Card className="bg-white shadow-lg backdrop-blur-sm">
-                  <CardContent className="p-6">
-                    <div className="mb-4 flex items-center justify-between">
-                      <h3 className="font-semibold text-gray-900">Why Choose Weda.lk?</h3>
-                      <div className="flex space-x-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            setCurrentTrustSlide((prev) =>
-                              prev === 0 ? trustSlides.length - 1 : prev - 1
-                            )
-                          }
-                          className="h-8 w-8 p-0"
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            setCurrentTrustSlide((prev) => (prev + 1) % trustSlides.length)
-                          }
-                          className="h-8 w-8 p-0"
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="relative overflow-hidden">
-                      <div
-                        className="flex transition-transform duration-500 ease-in-out"
-                        style={{ transform: `translateX(-${currentTrustSlide * 100}%)` }}
-                      >
-                        {trustSlides.map((slide, index) => (
-                          <div key={index} className="w-full flex-shrink-0">
-                            {slide.type === 'testimonial' ? (
-                              <div className="space-y-3 text-center">
-                                <div className="flex justify-center space-x-1">
-                                  {[...Array(slide.rating)].map((_, i) => (
-                                    <Star
-                                      key={i}
-                                      className="h-4 w-4 fill-current text-yellow-400"
-                                    />
-                                  ))}
-                                </div>
-                                <p className="text-sm text-gray-900 italic">{slide.description}</p>
-                                <p className="text-xs text-gray-600">— {slide.author}</p>
-                              </div>
-                            ) : (
-                              <div className="flex items-center space-x-3">
-                                <div className="flex-shrink-0">
-                                  {slide.type === 'verification' ? (
-                                    <TrustBadge type="police_verified" size="sm" />
-                                  ) : (
-                                    <div className="flex h-8 w-8 items-center justify-center rounded bg-green-100 text-green-600">
-                                      {slide.icon && <slide.icon className="h-4 w-4" />}
-                                    </div>
-                                  )}
-                                </div>
-                                <div>
-                                  <p className="text-sm font-medium text-gray-900">{slide.title}</p>
-                                  <p className="text-xs text-gray-600">{slide.details}</p>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Carousel indicators */}
-                    <div className="mt-4 flex justify-center space-x-2">
-                      {trustSlides.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentTrustSlide(index)}
-                          className={`h-2 w-2 rounded-full transition-colors ${
-                            index === currentTrustSlide ? 'bg-primary' : 'bg-muted'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </>
-            )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

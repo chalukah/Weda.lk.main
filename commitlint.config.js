@@ -24,7 +24,7 @@ export default {
       ],
     ],
     'subject-case': [1, 'never', ['sentence-case', 'start-case', 'pascal-case']], // Changed to warning
-    'type-empty': [1], // Changed to warning
-    'subject-empty': [1], // Changed to warning
+    'type-empty': [0], // Disabled
+    'subject-empty': [0], // Disabled
   },
 }

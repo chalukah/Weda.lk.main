@@ -1,5 +1,7 @@
 import { Navbar } from '@/components/Navbar'
 import { Hero } from '@/components/Hero'
+import { PopularServices } from '@/components/PopularServices'
+import { WhyChooseUs } from '@/components/WhyChooseUs'
 import Footer from '@/components/Footer'
 
 export default function Home() {
@@ -12,8 +14,8 @@ export default function Home() {
 
         <div className="relative z-10">
           <Hero />
-
-          {/* Sections below the hero intentionally removed */}
+          <PopularServices />
+          <WhyChooseUs />
         </div>
       </main>
 
