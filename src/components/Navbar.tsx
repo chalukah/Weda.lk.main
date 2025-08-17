@@ -102,12 +102,10 @@ export function Navbar() {
 
             {/* Location & Auth */}
             <div className="flex items-center space-x-4">
-              {mounted && (
-                <div className="text-muted-foreground hidden items-center space-x-2 text-base sm:flex">
-                  <MapPin className="h-5 w-5" />
-                  <span>{currentLocation?.city || 'Colombo'}</span>
-                </div>
-              )}
+              <div className="text-muted-foreground hidden items-center space-x-2 text-base sm:flex">
+                <MapPin className="h-5 w-5" />
+                <span>{currentLocation?.city || 'Colombo'}</span>
+              </div>
               <ThemeToggle />
               <Link href="/login">
                 <Button variant="outline" className="hidden text-base md:inline-flex">
@@ -124,26 +122,20 @@ export function Navbar() {
                 className="md:hidden"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
-                {mounted && mobileMenuOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <Menu className="h-6 w-6" />
-                )}
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
             </div>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        {mounted && mobileMenuOpen && (
+        {mobileMenuOpen && (
           <div className="border-border bg-background border-t md:hidden">
             <div className="space-y-4 px-4 py-4">
-              {mounted && (
-                <div className="text-muted-foreground border-border flex items-center space-x-2 border-b pb-4 text-base">
-                  <MapPin className="h-5 w-5" />
-                  <span>Current Location: {currentLocation?.city || 'Colombo'}</span>
-                </div>
-              )}
+              <div className="text-muted-foreground border-border flex items-center space-x-2 border-b pb-4 text-base">
+                <MapPin className="h-5 w-5" />
+                <span>Current Location: {currentLocation?.city || 'Colombo'}</span>
+              </div>
 
               <div className="space-y-2">
                 <Link
