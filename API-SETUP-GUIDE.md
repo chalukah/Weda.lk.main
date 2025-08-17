@@ -82,6 +82,7 @@ Before starting, ensure you have:
 ### Step 1: NextAuth Secret
 
 1. **Generate Secret**
+
    ```bash
    # Run in terminal
    openssl rand -base64 32

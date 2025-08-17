@@ -2,7 +2,7 @@ export default {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'type-enum': [
-      2,
+      1, // Changed from 2 (error) to 1 (warning)
       'always',
       [
         'feat',
@@ -16,8 +16,15 @@ export default {
         'ci',
         'chore',
         'revert',
+        'update', // Added common variations
+        'add',
+        'remove',
+        'change',
+        'wip', // work in progress
       ],
     ],
-    'subject-case': [2, 'never', ['sentence-case', 'start-case', 'pascal-case']],
+    'subject-case': [1, 'never', ['sentence-case', 'start-case', 'pascal-case']], // Changed to warning
+    'type-empty': [1], // Changed to warning
+    'subject-empty': [1], // Changed to warning
   },
 }

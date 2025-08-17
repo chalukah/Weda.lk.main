@@ -27,18 +27,39 @@ export const authOptions: NextAuthOptions = {
             .single()
 
           if (!existingUser) {
-            // Create new user in Supabase
-            const { error } = await supabase.from('users').insert({
-              email: user.email,
-              name: user.name,
-              image: user.image,
-              provider: account.provider,
-              provider_id: account.providerAccountId,
-            })
+            // Create new user in Supabase with basic fields only
+            const { data: newUser, error } = await supabase
+              .from('users')
+              .insert({
+                email: user.email,
+                phone: '', // Will be updated later if needed
+                password_hash: '', // OAuth users don't need password
+                role: 'CUSTOMER', // Default role, can be updated after signup
+                verification_status: 'VERIFIED',
+                needs_role_selection: true, // Flag to show role selection flow
+              })
+              .select('id')
+              .single()
 
             if (error) {
               console.error('Error creating user:', error)
               return false
+            }
+
+            // Create user profile
+            if (newUser) {
+              const names = user.name?.split(' ') || ['', '']
+              const { error: profileError } = await supabase.from('user_profiles').insert({
+                user_id: newUser.id,
+                first_name: names[0] || '',
+                last_name: names.slice(1).join(' ') || '',
+                avatar_url: user.image,
+              })
+
+              if (profileError) {
+                console.error('Error creating profile:', profileError)
+                // Continue anyway - profile creation is optional
+              }
             }
           }
           return true
@@ -53,12 +74,35 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.provider = account?.provider
       }
+
+      // Fetch fresh user data from Supabase
+      if (token.sub) {
+        try {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('role, verification_status, needs_role_selection')
+            .eq('email', token.email)
+            .single()
+
+          if (userData) {
+            token.role = userData.role
+            token.verificationStatus = userData.verification_status
+            token.needsRoleSelection = userData.needs_role_selection
+          }
+        } catch (error) {
+          console.error('Error fetching user data in JWT callback:', error)
+        }
+      }
+
       return token
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub!
         session.user.provider = token.provider as string
+        session.user.role = token.role as string
+        session.user.verificationStatus = token.verificationStatus as string
+        session.user.needsRoleSelection = token.needsRoleSelection as boolean
       }
       return session
     },
