@@ -69,6 +69,10 @@ export function Navbar() {
     detectLocation()
   }, [mounted])
 
+  if (!mounted) {
+    return null
+  }
+
   return (
     <>
       {/* Desktop Navigation */}
