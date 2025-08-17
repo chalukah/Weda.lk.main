@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { supabaseServer } from '@/lib/supabase-server'
 import bcrypt from 'bcryptjs'
-import { UserRole } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,11 +34,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ email }, { phone: cleanPhone }],
-      },
-    })
+    const { data: existingUser, error: checkError } = await supabaseServer
+      .from('users')
+      .select('id, email, phone')
+      .or(`email.eq.${email},phone.eq.${cleanPhone}`)
+      .limit(1)
+      .single()
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('Database check error:', checkError)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
 
     if (existingUser) {
       return NextResponse.json(
@@ -51,32 +56,48 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Create user with profile
-    const user = await prisma.user.create({
-      data: {
+    // Create user
+    const { data: user, error: userError } = await supabaseServer
+      .from('users')
+      .insert({
         email,
         phone: cleanPhone,
-        passwordHash: hashedPassword,
-        role: userType === 'provider' ? UserRole.PROVIDER : UserRole.CUSTOMER,
-        profile: {
-          create: {
-            firstName,
-            lastName,
-          },
-        },
-      },
-      include: {
-        profile: true,
-      },
-    })
+        password_hash: hashedPassword,
+        role: userType === 'provider' ? 'PROVIDER' : 'CUSTOMER',
+      })
+      .select('id, email, phone, role, verification_status, created_at')
+      .single()
 
-    // Return user without password
-    const { passwordHash, ...userWithoutPassword } = user
+    if (userError) {
+      console.error('User creation error:', userError)
+      return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
+    }
+
+    // Create user profile
+    const { data: profile, error: profileError } = await supabaseServer
+      .from('user_profiles')
+      .insert({
+        user_id: user.id,
+        first_name: firstName,
+        last_name: lastName,
+      })
+      .select('first_name, last_name')
+      .single()
+
+    if (profileError) {
+      console.error('Profile creation error:', profileError)
+      // Clean up user if profile creation fails
+      await supabaseServer.from('users').delete().eq('id', user.id)
+      return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
+    }
 
     return NextResponse.json(
       {
         message: 'User created successfully',
-        user: userWithoutPassword,
+        user: {
+          ...user,
+          profile,
+        },
       },
       { status: 201 }
     )

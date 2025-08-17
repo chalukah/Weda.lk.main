@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { supabaseServer } from '@/lib/supabase-server'
 import { getRedisStatus } from '@/lib/redis'
 import { validateEnvironment } from '@/lib/config'
 
@@ -13,9 +13,14 @@ export async function GET() {
     let dbResponseTime = 0
 
     try {
-      await prisma.$queryRaw`SELECT 1`
+      const { data, error } = await supabaseServer.from('users').select('id').limit(1)
+
       dbResponseTime = Date.now() - dbStartTime
-      dbStatus = 'connected'
+      if (!error) {
+        dbStatus = 'connected'
+      } else {
+        console.error('Database health check failed:', error)
+      }
     } catch (error) {
       dbResponseTime = Date.now() - dbStartTime
       console.error('Database health check failed:', error)

@@ -27,7 +27,14 @@
       "Bash(npm view:*)",
       "Bash(npm search:*)",
       "Bash(openssl rand:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(rm:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx next:*)",
+      "Bash(curl:*)",
+      "Bash(node:*)",
+      "Bash(npx kill-port:*)"
     ],
     "deny": []
   }

@@ -21,9 +21,9 @@
       "command": "npx",
       "args": ["-y", "@cloudinary/mcp-server@latest"],
       "env": {
-        "CLOUDINARY_CLOUD_NAME": "your-cloud-name",
-        "CLOUDINARY_API_KEY": "123456789012345",
-        "CLOUDINARY_API_SECRET": "your-secret-key"
+        "CLOUDINARY_CLOUD_NAME": "do1zcmyu1",
+        "CLOUDINARY_API_KEY": "963649339476182",
+        "CLOUDINARY_API_SECRET": "C-znn8ZdXd4Hnkfq6GNrvw5UvZ4"
       }
     },
     "filesystem": {
