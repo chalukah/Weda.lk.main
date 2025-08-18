@@ -39,15 +39,9 @@ export function LanguageToggle() {
   }
 
   const switchLanguage = (newLocale: string) => {
-    // Get the pathname without the current locale
-    const pathnameWithoutLocale = pathname.startsWith(`/${locale}`)
-      ? pathname.slice(`/${locale}`.length) || '/'
-      : pathname
-
-    // Construct new path with new locale
-    const newPath = `/${newLocale}${pathnameWithoutLocale === '/' ? '' : pathnameWithoutLocale}`
-    router.push(newPath)
-    router.refresh()
+    // Use the locale-aware router to switch languages
+    // This automatically handles the locale prefixes correctly
+    router.push(pathname, { locale: newLocale })
   }
 
   const currentLanguage = languages.find((lang) => lang.code === locale)

@@ -3,10 +3,11 @@ import Footer from '@/components/Footer'
 import { Search, UserCheck, Calendar, CreditCard, Shield, Star, CheckCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, getLocale } from 'next-intl/server'
 
-export default async function HowItWorksPage() {
-  const t = await getTranslations('pages.howItWorks')
+export default async function HowItWorksPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'pages.howItWorks' })
   const customerSteps = [
     {
       step: 1,
