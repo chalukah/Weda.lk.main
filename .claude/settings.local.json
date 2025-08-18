@@ -34,7 +34,10 @@
       "Bash(npx next:*)",
       "Bash(curl:*)",
       "Bash(node:*)",
-      "Bash(npx kill-port:*)"
+      "Bash(npx kill-port:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }

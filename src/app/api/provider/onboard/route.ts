@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 import { getServerSession } from 'next-auth'
-import { PrismaClient } from '@prisma/client'
 import { authOptions } from '@/lib/auth'
 
-const prisma = new PrismaClient()
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,6 +15,8 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.json()
     const {
+      firstName,
+      lastName,
       businessName,
       description,
       phone,
@@ -26,86 +28,108 @@ export async function POST(request: NextRequest) {
       userEmail,
     } = formData
 
-    // Get user by email
-    const user = await prisma.user.findUnique({
-      where: { email: userEmail },
-      include: { profile: true },
-    })
+    // Check if user exists in auth.users, if not create one
+    let user
+    const { data: users } = await supabase.auth.admin.listUsers()
+    const existingUser = users?.users?.find((u) => u.email === userEmail)
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    // Update user phone if provided
-    if (phone) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { phone },
+    if (existingUser) {
+      user = existingUser
+    } else {
+      // Create user in Supabase auth if they don't exist
+      const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+        email: userEmail,
+        email_confirm: true,
+        user_metadata: {
+          name: `${firstName} ${lastName}`,
+          role: 'provider',
+        },
       })
+
+      if (createError) {
+        console.error('Error creating user:', createError)
+        return NextResponse.json({ error: 'Failed to create user account' }, { status: 500 })
+      }
+
+      user = newUser.user
     }
 
-    // Create or update user profile
-    await prisma.userProfile.upsert({
-      where: { userId: user.id },
-      create: {
-        userId: user.id,
-        firstName: formData.firstName || '',
-        lastName: formData.lastName || '',
-      },
-      update: {},
+    // Update user profile in public.users table
+    const { error: userError } = await supabase.from('users').upsert({
+      id: user.id,
+      email: userEmail,
+      name: `${firstName} ${lastName}`,
+      phone: phone,
+      role: 'provider',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     })
+
+    if (userError) {
+      console.error('Error updating user profile:', userError)
+    }
+
+    // Create provider application record
+    const { data: application, error: appError } = await supabase
+      .from('provider_applications')
+      .insert({
+        user_id: user.id,
+        user_email: userEmail,
+        first_name: firstName,
+        last_name: lastName,
+        business_name: businessName,
+        description: description,
+        phone: phone,
+        services: services,
+        service_areas: serviceAreas,
+        experience: experience,
+        certifications: certifications || '',
+        languages: languages,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single()
+
+    if (appError) {
+      console.error('Error creating provider application:', appError)
+      return NextResponse.json({ error: 'Failed to submit application' }, { status: 500 })
+    }
 
     // Create or update service provider profile
-    const serviceProvider = await prisma.serviceProvider.upsert({
-      where: { userId: user.id },
-      create: {
-        userId: user.id,
-        businessName,
-        description,
-        services,
-        serviceAreas: {
-          districts: serviceAreas,
-          experience: experience,
-          certifications: certifications || '',
-          languages: languages,
-        },
-        pricing: {},
-        availability: {},
-        rating: 0,
-        completedJobs: 0,
-        responseTimeMinutes: 0,
-        isActive: false, // Will be activated after admin approval
-        contactInfo: phone ? { phone } : {},
-      },
-      update: {
-        businessName,
-        description,
-        services,
-        serviceAreas: {
-          districts: serviceAreas,
-          experience: experience,
-          certifications: certifications || '',
-          languages: languages,
-        },
-        contactInfo: phone ? { phone } : {},
-      },
+    const { error: providerError } = await supabase.from('service_providers').upsert({
+      user_id: user.id,
+      business_name: businessName,
+      description: description,
+      services: services,
+      service_areas: serviceAreas,
+      experience: experience,
+      certifications: certifications || '',
+      languages: languages,
+      phone: phone,
+      rating: 0,
+      completed_jobs: 0,
+      is_active: false, // Will be activated after admin approval
+      is_verified: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     })
 
-    // Update user role to PROVIDER
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { role: 'PROVIDER' },
-    })
+    if (providerError) {
+      console.error('Error creating service provider:', providerError)
+    }
+
+    console.log('Provider application saved to Supabase:', application)
 
     return NextResponse.json({
       success: true,
-      message: 'Provider onboarding completed successfully',
+      message: 'Provider application submitted successfully',
+      applicationId: application.id,
       providerId: user.id,
     })
   } catch (error) {
     console.error('Error in provider onboarding API:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  } finally {
-    await prisma.$disconnect()
   }
 }

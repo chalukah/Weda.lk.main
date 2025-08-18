@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
+
+export const dynamic = 'force-dynamic'
+
 import { Navbar } from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

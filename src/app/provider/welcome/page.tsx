@@ -1,8 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 import { useSession } from 'next-auth/react'
+
+export const dynamic = 'force-dynamic'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -115,7 +118,7 @@ export default function ProviderWelcomePage() {
     },
     {
       title: 'Verification Process',
-      description: 'Police clearance and reference verification',
+      description: 'Document and background verification (if required)',
       status: 'pending',
       time: '1-2 business days',
     },

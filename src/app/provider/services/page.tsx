@@ -1,8 +1,11 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 import { useEffect } from 'react'
+
+export const dynamic = 'force-dynamic'
+
 import { Navbar } from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

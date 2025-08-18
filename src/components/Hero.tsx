@@ -16,9 +16,13 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
+import { useTranslations } from 'next-intl'
 
 export function Hero() {
+  const t = useTranslations('hero')
+  const tTrust = useTranslations('trust')
+  const tButtons = useTranslations('buttons')
   const [showSearch, setShowSearch] = useState(false)
   const [currentTrustSlide, setCurrentTrustSlide] = useState(0)
   const [mounted, setMounted] = useState(false)
@@ -109,22 +113,18 @@ export function Hero() {
               {/* Trust Badge */}
               <div className="animate-trust-badge inline-flex items-center space-x-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
                 <Shield className="h-4 w-4 text-white" />
-                <span className="text-sm font-medium text-white">Security guaranteed</span>
+                <span className="text-sm font-medium text-white">
+                  {tTrust('securityGuaranteed')}
+                </span>
               </div>
 
               {/* Main Heading */}
               <div className="space-y-4">
                 <h1 className="text-3xl leading-tight font-bold text-white md:text-4xl lg:text-5xl">
-                  Trusted Home Services in <span className="text-yellow-300">Sri Lanka</span>
+                  {t('title')}
                 </h1>
                 <p className="text-base leading-relaxed text-white/95 md:text-lg">
-                  Connect with{' '}
-                  <span className="font-semibold text-yellow-300">police-verified</span>, skilled
-                  professionals for all your home maintenance needs.{' '}
-                  <span className="font-semibold text-yellow-300">
-                    Safe, reliable, and transparent
-                  </span>{' '}
-                  pricing with guaranteed quality service.
+                  {t('subtitle')}
                 </p>
               </div>
 
@@ -136,7 +136,7 @@ export function Hero() {
                   onClick={() => router.push('/search')}
                 >
                   <Search className="mr-2 h-4 w-4" />
-                  Find Services
+                  {t('searchButton')}
                 </Button>
                 <Button
                   variant="secondary"
@@ -144,7 +144,7 @@ export function Hero() {
                   className="hover:text-primary border-2 border-white/30 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white"
                   onClick={() => router.push('/become-provider')}
                 >
-                  Join as Provider
+                  {tButtons('joinAsProvider')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -181,7 +181,7 @@ export function Hero() {
                 <div className="absolute right-4 bottom-4 left-4">
                   <div className="rounded-lg bg-white/95 p-3 backdrop-blur-sm">
                     <p className="text-sm font-medium text-gray-900">
-                      Trusted professionals verified by Sri Lankan Police
+                      {tTrust('trustedProfessionals')}
                     </p>
                   </div>
                 </div>

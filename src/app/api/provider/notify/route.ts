@@ -1,16 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-// Configure nodemailer transporter
-const transporter = nodemailer.createTransporter({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-  },
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,7 +51,7 @@ export async function POST(request: NextRequest) {
                 </div>
                 <div class="step">
                   <strong>✅ Verification Process</strong><br>
-                  We'll verify your police clearance and professional references.
+                  We'll verify your documents and background information.
                 </div>
                 <div class="step">
                   <strong>🎯 Profile Activation</strong><br>
@@ -130,17 +121,17 @@ export async function POST(request: NextRequest) {
     `
 
     // Send email to applicant
-    await transporter.sendMail({
-      from: `"Weda.lk Team" <${process.env.SMTP_USER}>`,
+    await resend.emails.send({
+      from: `Weda.lk Team <${process.env.RESEND_FROM_EMAIL}>`,
       to: email,
       subject: '🎉 Welcome to Weda.lk - Application Received!',
       html: applicantEmailHtml,
     })
 
     // Send notification to admin
-    await transporter.sendMail({
-      from: `"Weda.lk System" <${process.env.SMTP_USER}>`,
-      to: process.env.ADMIN_EMAIL || 'admin@weda.lk',
+    await resend.emails.send({
+      from: `Weda.lk System <${process.env.RESEND_FROM_EMAIL}>`,
+      to: process.env.ADMIN_EMAIL || process.env.RESEND_FROM_EMAIL || 'wedamarketplace@gmail.com',
       subject: `🔔 New Provider Application - ${businessName}`,
       html: adminEmailHtml,
     })

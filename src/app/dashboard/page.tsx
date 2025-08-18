@@ -8,8 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { User, Settings, LogOut, Calendar, Search, Briefcase, Users } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 import { useEffect } from 'react'
+
+export const dynamic = 'force-dynamic'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()

@@ -4,34 +4,35 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Search } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
+import { useTranslations } from 'next-intl'
 
 export function PopularServices() {
   const router = useRouter()
+  const t = useTranslations('popularServices')
+  const tServices = useTranslations('services')
 
   const serviceCategories = [
-    { name: 'House Cleaning', icon: '🏠', popular: true },
-    { name: 'Plumbing', icon: '🔧', popular: true },
-    { name: 'Electrical', icon: '⚡', popular: true },
-    { name: 'Gardening', icon: '🌱', popular: false },
-    { name: 'Painting', icon: '🎨', popular: false },
-    { name: 'Carpentry', icon: '🪚', popular: false },
+    { name: 'houseCleaning', displayName: tServices('cleaning'), icon: '🏠', popular: true },
+    { name: 'plumbing', displayName: tServices('plumbing'), icon: '🔧', popular: true },
+    { name: 'electrical', displayName: tServices('electrical'), icon: '⚡', popular: true },
+    { name: 'gardening', displayName: tServices('gardening'), icon: '🌱', popular: false },
+    { name: 'painting', displayName: tServices('painting'), icon: '🎨', popular: false },
+    { name: 'carpentry', displayName: tServices('carpentry'), icon: '🪚', popular: false },
   ]
 
   return (
     <section className="bg-gray-50 py-16">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-gray-900">Popular Services</h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">
-            Choose from our most requested home services, all provided by verified professionals
-          </p>
+          <h2 className="mb-4 text-3xl font-bold text-gray-900">{t('title')}</h2>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600">{t('subtitle')}</p>
         </div>
 
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-center justify-center">
             <Badge variant="secondary" className="bg-primary/20 text-primary px-4 py-2 font-medium">
-              Most Requested
+              {t('mostRequested')}
             </Badge>
           </div>
 
@@ -41,14 +42,14 @@ export function PopularServices() {
                 key={index}
                 className="group hover:border-primary cursor-pointer border-2 border-gray-200 bg-white transition-all duration-200 hover:scale-105 hover:shadow-lg"
                 onClick={() => {
-                  router.push(`/search?category=${encodeURIComponent(category.name.toLowerCase())}`)
+                  router.push(`/search?category=${encodeURIComponent(category.name)}`)
                 }}
               >
                 <CardContent className="flex items-center space-x-4 p-6">
                   <div className="flex-shrink-0 text-3xl">{category.icon}</div>
                   <div className="text-left">
                     <div className="group-hover:text-primary text-base font-semibold text-gray-900 transition-colors">
-                      {category.name}
+                      {category.displayName}
                     </div>
                     {category.popular && (
                       <Badge
@@ -71,7 +72,7 @@ export function PopularServices() {
               onClick={() => router.push('/search')}
             >
               <Search className="mr-2 h-5 w-5" />
-              Search All Services
+              {t('findProviders')}
             </Button>
           </div>
         </div>

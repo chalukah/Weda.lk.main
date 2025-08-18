@@ -5,8 +5,11 @@ import { Button } from '@/components/ui/button'
 import { TrustBadge } from './TrustBadge'
 import { Shield, Star, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 export function WhyChooseUs() {
+  const t = useTranslations('whyChooseUs')
+  const tTrust = useTranslations('trust')
   const [currentTrustSlide, setCurrentTrustSlide] = useState(0)
   const [mounted, setMounted] = useState(false)
 
@@ -17,30 +20,30 @@ export function WhyChooseUs() {
   const trustSlides = [
     {
       type: 'verification',
-      title: 'Police Verification Process',
-      description: 'Every provider undergoes thorough police background checks',
+      title: tTrust('policeVerificationProcess'),
+      description: tTrust('policeVerificationDesc'),
       icon: Shield,
-      details: 'All providers are background checked',
+      details: tTrust('allProvidersChecked'),
     },
     {
       type: 'testimonial',
-      title: 'Customer Testimonial',
-      description: '"Found an excellent plumber through Weda.lk. Professional and trustworthy!"',
-      author: 'Priya S., Colombo',
+      title: tTrust('customerTestimonial'),
+      description: tTrust('testimonial1'),
+      author: tTrust('testimonial1Author'),
       rating: 5,
     },
     {
       type: 'process',
-      title: 'Secure Payment System',
-      description: 'Escrow payment held until service completion',
+      title: tTrust('securePaymentSystem'),
+      description: tTrust('escrowPayment'),
       icon: CheckCircle,
-      details: "Payment protected until you're satisfied",
+      details: tTrust('paymentProtected'),
     },
     {
       type: 'testimonial',
-      title: 'Provider Success Story',
-      description: '"Weda.lk helped me grow my business with verified customers"',
-      author: 'Ravi M., Service Provider',
+      title: tTrust('providerSuccessStory'),
+      description: tTrust('testimonial2'),
+      author: tTrust('testimonial2Author'),
       rating: 5,
     },
   ]
@@ -59,10 +62,8 @@ export function WhyChooseUs() {
     <section className="bg-gray-50 py-16">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-gray-900">Why Choose Weda.lk?</h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">
-            Your safety and satisfaction are our top priorities. Here's what makes us different.
-          </p>
+          <h2 className="mb-4 text-3xl font-bold text-gray-900">{t('title')}</h2>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600">{t('verifiedDesc')}</p>
         </div>
 
         <div className="mx-auto max-w-4xl">

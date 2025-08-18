@@ -2,11 +2,13 @@
 
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { LanguageToggle } from '@/components/language-toggle'
 import { Location } from '@/components/LocationPicker'
 import { useState, useEffect } from 'react'
 import { Menu, X, MapPin, Search, LogOut, User, Settings } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import { useSession, signOut } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function Navbar() {
   const { data: session, status } = useSession()
+  const t = useTranslations('navbar')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [currentLocation, setCurrentLocation] = useState<Location | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -69,8 +72,33 @@ export function Navbar() {
     detectLocation()
   }, [mounted])
 
+  // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
-    return null
+    return (
+      <nav className="border-border bg-background/80 fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-md">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <Link href="/" className="flex items-center space-x-2">
+              <div className="bg-primary flex h-9 w-9 items-center justify-center rounded">
+                <span
+                  className="text-primary-foreground text-sm leading-none font-extrabold"
+                  style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                >
+                  වැඩ
+                </span>
+              </div>
+              <span
+                className="text-foreground text-xl font-extrabold tracking-tight"
+                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', lineHeight: '1.2' }}
+              >
+                වැඩ.lk
+              </span>
+            </Link>
+            <div className="bg-muted h-8 w-32 animate-pulse rounded" />
+          </div>
+        </div>
+      </nav>
+    )
   }
 
   return (
@@ -82,11 +110,19 @@ export function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <div className="bg-primary flex h-9 w-9 items-center justify-center rounded">
-                <span className="text-primary-foreground text-xs leading-none font-bold tracking-tight">
+                <span
+                  className="text-primary-foreground text-sm leading-none font-extrabold"
+                  style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                >
                   වැඩ
                 </span>
               </div>
-              <span className="text-foreground text-xl font-bold">වැඩ.lk</span>
+              <span
+                className="text-foreground text-xl font-extrabold tracking-tight"
+                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', lineHeight: '1.2' }}
+              >
+                වැඩ.lk
+              </span>
             </Link>
 
             {/* Desktop Navigation Links */}
@@ -97,19 +133,19 @@ export function Navbar() {
                   className="text-muted-foreground hover:text-foreground flex items-center space-x-1 text-base font-medium transition-colors"
                 >
                   <Search className="h-5 w-5" />
-                  <span>Find Services</span>
+                  <span>{t('findServices')}</span>
                 </Link>
                 <Link
                   href="/how-it-works"
                   className="text-muted-foreground hover:text-foreground text-base font-medium transition-colors"
                 >
-                  How it Works
+                  {t('howItWorks')}
                 </Link>
                 <Link
                   href="/become-provider"
                   className="text-muted-foreground hover:text-foreground text-base font-medium transition-colors"
                 >
-                  Become a Provider
+                  {t('becomeProvider')}
                 </Link>
               </div>
             </div>
@@ -120,6 +156,7 @@ export function Navbar() {
                 <MapPin className="h-5 w-5" />
                 <span>{currentLocation?.city || 'Colombo'}</span>
               </div>
+              <LanguageToggle />
               <ThemeToggle />
 
               {/* Authentication Section */}
@@ -155,13 +192,13 @@ export function Navbar() {
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard" className="cursor-pointer">
                         <User className="mr-2 h-4 w-4" />
-                        Dashboard
+                        {t('dashboard')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/profile" className="cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />
-                        Profile
+                        {t('profile')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -170,7 +207,7 @@ export function Navbar() {
                       onSelect={() => signOut({ callbackUrl: '/' })}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
-                      Log out
+                      {t('logOut')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -178,11 +215,11 @@ export function Navbar() {
                 <>
                   <Link href="/login">
                     <Button variant="outline" className="hidden text-base md:inline-flex">
-                      Login
+                      {t('login')}
                     </Button>
                   </Link>
                   <Link href="/signup">
-                    <Button className="hidden text-base md:inline-flex">Sign Up</Button>
+                    <Button className="hidden text-base md:inline-flex">{t('signUp')}</Button>
                   </Link>
                 </>
               )}
@@ -205,7 +242,9 @@ export function Navbar() {
             <div className="space-y-4 px-4 py-4">
               <div className="text-muted-foreground border-border flex items-center space-x-2 border-b pb-4 text-base">
                 <MapPin className="h-5 w-5" />
-                <span>Current Location: {currentLocation?.city || 'Colombo'}</span>
+                <span>
+                  {t('currentLocation')}: {currentLocation?.city || 'Colombo'}
+                </span>
               </div>
 
               <div className="space-y-2">
@@ -214,24 +253,26 @@ export function Navbar() {
                   className="text-foreground hover:bg-muted flex items-center space-x-3 rounded-lg px-3 py-2 text-base font-medium transition-colors"
                 >
                   <Search className="h-5 w-5" />
-                  <span>Find Services</span>
+                  <span>{t('findServices')}</span>
                 </Link>
                 <Link
                   href="/how-it-works"
                   className="text-muted-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-base font-medium transition-colors"
                 >
-                  How it Works
+                  {t('howItWorks')}
                 </Link>
                 <Link
                   href="/become-provider"
                   className="text-muted-foreground hover:text-foreground hover:bg-muted block rounded-lg px-3 py-2 text-base font-medium transition-colors"
                 >
-                  Become a Provider
+                  {t('becomeProvider')}
                 </Link>
               </div>
 
               <div className="border-border space-y-2 border-t pt-4">
-                {session ? (
+                {status === 'loading' ? (
+                  <div className="bg-muted h-8 w-full animate-pulse rounded" />
+                ) : session ? (
                   <>
                     <div className="flex items-center space-x-3 px-3 py-2">
                       <Avatar className="h-8 w-8">
@@ -251,13 +292,13 @@ export function Navbar() {
                     <Link href="/dashboard">
                       <Button variant="outline" className="w-full justify-start text-base">
                         <User className="mr-2 h-4 w-4" />
-                        Dashboard
+                        {t('dashboard')}
                       </Button>
                     </Link>
                     <Link href="/profile">
                       <Button variant="outline" className="w-full justify-start text-base">
                         <Settings className="mr-2 h-4 w-4" />
-                        Profile
+                        {t('profile')}
                       </Button>
                     </Link>
                     <Button
@@ -266,18 +307,18 @@ export function Navbar() {
                       onClick={() => signOut({ callbackUrl: '/' })}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
-                      Log out
+                      {t('logOut')}
                     </Button>
                   </>
                 ) : (
                   <>
                     <Link href="/login">
                       <Button variant="outline" className="w-full justify-start text-base">
-                        Login
+                        {t('login')}
                       </Button>
                     </Link>
                     <Link href="/signup">
-                      <Button className="w-full justify-start text-base">Sign Up</Button>
+                      <Button className="w-full justify-start text-base">{t('signUp')}</Button>
                     </Link>
                   </>
                 )}

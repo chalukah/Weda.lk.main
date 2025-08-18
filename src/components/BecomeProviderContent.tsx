@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { signIn } from 'next-auth/react'
 import {
@@ -18,87 +18,91 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ProviderApplicationForm } from '@/components/ProviderApplicationForm'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 export function BecomeProviderContent() {
   const { data: session, status } = useSession()
   const [showApplicationForm, setShowApplicationForm] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const t = useTranslations('pages.becomeProvider')
+
+  // Prevent hydration mismatch by only rendering after component mounts
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const benefits = [
     {
       icon: <TrendingUp className="h-8 w-8 text-green-600" />,
-      title: 'Grow Your Business',
-      description: 'Reach thousands of potential customers actively looking for your services.',
+      title: t('growBusiness'),
+      description: t('growBusinessDesc'),
     },
     {
       icon: <Shield className="h-8 w-8 text-blue-600" />,
-      title: 'Build Trust',
-      description: 'Police verification badge builds customer confidence and increases bookings.',
+      title: t('buildTrust'),
+      description: t('buildTrustDesc'),
     },
     {
       icon: <Users className="h-8 w-8 text-purple-600" />,
-      title: 'Verified Customers',
-      description: 'Work with genuine customers who have been verified through our platform.',
+      title: t('verifiedCustomers'),
+      description: t('verifiedCustomersDesc'),
     },
     {
       icon: <CreditCard className="h-8 w-8 text-orange-600" />,
-      title: 'Secure Payments',
-      description: 'Get paid reliably through our secure escrow payment system.',
+      title: t('securePayments'),
+      description: t('securePaymentsDesc'),
     },
   ]
 
   const requirements = [
     {
       icon: <FileText className="text-primary h-6 w-6" />,
-      title: 'Valid ID & Business License',
-      description: 'National ID card and relevant business/professional licenses',
+      title: t('validNicPassport'),
+      description: t('validNicPassportDesc'),
     },
     {
       icon: <Shield className="text-primary h-6 w-6" />,
-      title: 'Police Clearance',
-      description: 'Recent police clearance certificate (within 6 months)',
-    },
-    {
-      icon: <Camera className="text-primary h-6 w-6" />,
-      title: 'Portfolio & References',
-      description: 'Work samples and at least 2 professional references',
+      title: t('policeClearance'),
+      description: t('policeClearanceDesc'),
+      highlight: true,
     },
     {
       icon: <CheckCircle className="text-primary h-6 w-6" />,
-      title: 'Skills Assessment',
-      description: 'Complete our skills verification process for your service category',
+      title: t('skillsVerification'),
+      description: t('skillsVerificationDesc'),
     },
   ]
 
   const onboardingSteps = [
     {
       step: 1,
-      title: 'Create Account',
-      description: 'Sign up with your basic information and create your provider profile.',
-      time: '5 minutes',
+      title: t('createAccount'),
+      description: t('createAccountDesc'),
+      time: `2 ${t('minutes')}`,
     },
     {
       step: 2,
-      title: 'Upload Documents',
-      description: 'Submit required documents including police clearance and licenses.',
-      time: '15 minutes',
+      title: t('uploadIdCopy'),
+      description: t('uploadIdCopyDesc'),
+      time: `1 ${t('minute')}`,
     },
     {
       step: 3,
-      title: 'Skills Verification',
-      description: 'Complete skills assessment and upload portfolio of your work.',
-      time: '30 minutes',
+      title: t('skillsVerificationStep'),
+      description: t('skillsVerificationStepDesc'),
+      time: `2 ${t('minutes')}`,
     },
     {
       step: 4,
-      title: 'Profile Review',
-      description: 'Our team reviews your application and verifies all documents.',
-      time: '2-3 days',
+      title: t('profileReview'),
+      description: t('profileReviewDesc'),
+      time: `5 ${t('minutes')}`,
     },
     {
       step: 5,
-      title: 'Go Live',
-      description: 'Start receiving bookings once your profile is approved and verified.',
-      time: 'Instant',
+      title: t('goLive'),
+      description: t('goLiveDesc'),
+      time: t('instant'),
     },
   ]
 
@@ -126,6 +130,17 @@ export function BecomeProviderContent() {
     setShowApplicationForm(true)
   }
 
+  // Prevent hydration mismatch by only rendering client-dependent content after mount
+  if (!mounted) {
+    return (
+      <main className="pt-16">
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <div className="text-center">Loading...</div>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <>
       <main className="pt-16">
@@ -133,15 +148,12 @@ export function BecomeProviderContent() {
         <section className="from-primary/10 to-background bg-gradient-to-b py-16">
           <div className="mx-auto max-w-4xl px-4 text-center lg:px-8">
             <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
-              Become a Verified Provider
+              {t('heroTitle')}
             </h1>
-            <p className="text-muted-foreground mt-6 text-xl">
-              Join Sri Lanka's trusted marketplace for home services. Get verified, build your
-              reputation, and grow your business.
-            </p>
+            <p className="text-muted-foreground mt-6 text-xl">{t('heroSubtitle')}</p>
             <div className="mt-8">
               <Button size="lg" className="px-8 py-3 text-lg" onClick={handleStartApplication}>
-                Start Your Application
+                {t('startApplication')}
               </Button>
             </div>
           </div>
@@ -152,11 +164,9 @@ export function BecomeProviderContent() {
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
             <div className="mb-12 text-center">
               <h2 className="text-foreground text-3xl font-bold tracking-tight">
-                Why Choose Weda.lk?
+                {t('benefitsTitle')}
               </h2>
-              <p className="text-muted-foreground mt-4 text-lg">
-                Join thousands of professionals already growing their business with us
-              </p>
+              <p className="text-muted-foreground mt-4 text-lg">{t('benefitsSubtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -182,11 +192,9 @@ export function BecomeProviderContent() {
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
             <div className="mb-12 text-center">
               <h2 className="text-foreground text-3xl font-bold tracking-tight">
-                Earning Potential
+                {t('earningPotentialTitle')}
               </h2>
-              <p className="text-muted-foreground mt-4 text-lg">
-                See what verified providers are earning in different service categories
-              </p>
+              <p className="text-muted-foreground mt-4 text-lg">{t('earningPotentialSubtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -207,7 +215,12 @@ export function BecomeProviderContent() {
                               : 'outline'
                         }
                       >
-                        {earning.demand} Demand
+                        {earning.demand === 'Very High'
+                          ? t('veryHigh')
+                          : earning.demand === 'High'
+                            ? t('high')
+                            : t('medium')}{' '}
+                        {t('demand')}
                       </Badge>
                     </div>
                   </CardContent>
@@ -216,10 +229,7 @@ export function BecomeProviderContent() {
             </div>
 
             <div className="mt-8 text-center">
-              <p className="text-muted-foreground text-sm">
-                * Rates vary based on experience, location, and service complexity. Platform fee:
-                23%
-              </p>
+              <p className="text-muted-foreground text-sm">{t('ratesNote')}</p>
             </div>
           </div>
         </section>
@@ -229,16 +239,17 @@ export function BecomeProviderContent() {
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
             <div className="mb-12 text-center">
               <h2 className="text-foreground text-3xl font-bold tracking-tight">
-                Requirements to Join
+                {t('requirementsTitle')}
               </h2>
-              <p className="text-muted-foreground mt-4 text-lg">
-                What you need to become a verified provider on our platform
-              </p>
+              <p className="text-muted-foreground mt-4 text-lg">{t('requirementsSubtitle')}</p>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {requirements.map((requirement, index) => (
-                <Card key={index}>
+                <Card
+                  key={index}
+                  className={requirement.highlight ? 'border-orange-200 bg-orange-50/50' : ''}
+                >
                   <CardHeader>
                     <div className="flex items-center space-x-3">
                       {requirement.icon}
@@ -246,7 +257,11 @@ export function BecomeProviderContent() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground text-sm">{requirement.description}</p>
+                    <p
+                      className={`text-sm ${requirement.highlight ? 'font-medium text-orange-700' : 'text-muted-foreground'}`}
+                    >
+                      {requirement.description}
+                    </p>
                   </CardContent>
                 </Card>
               ))}
@@ -259,11 +274,9 @@ export function BecomeProviderContent() {
           <div className="mx-auto max-w-4xl px-4 lg:px-8">
             <div className="mb-12 text-center">
               <h2 className="text-foreground text-3xl font-bold tracking-tight">
-                Getting Started Process
+                {t('processTitle')}
               </h2>
-              <p className="text-muted-foreground mt-4 text-lg">
-                5 simple steps to become a verified provider
-              </p>
+              <p className="text-muted-foreground mt-4 text-lg">{t('processSubtitle')}</p>
             </div>
 
             <div className="space-y-6">
@@ -293,17 +306,15 @@ export function BecomeProviderContent() {
         <section className="py-16">
           <div className="mx-auto max-w-4xl px-4 text-center lg:px-8">
             <h2 className="text-foreground text-3xl font-bold tracking-tight">
-              Ready to Get Started?
+              {t('readyToStart')}
             </h2>
-            <p className="text-muted-foreground mt-4 text-lg">
-              Join our platform and start building your professional reputation today
-            </p>
+            <p className="text-muted-foreground mt-4 text-lg">{t('readyToStartDesc')}</p>
             <div className="mt-8 space-x-4">
               <Button size="lg" className="px-8 py-3 text-lg" onClick={handleStartApplication}>
-                Apply Now
+                {t('applyNow')}
               </Button>
               <Button variant="outline" size="lg" className="px-8 py-3 text-lg">
-                Learn More
+                {t('learnMore')}
               </Button>
             </div>
           </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -35,8 +35,9 @@ import {
   Award,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import confetti from 'canvas-confetti'
 
-type FormStep = 1 | 2 | 3 | 4 | 5
+type FormStep = 1 | 2 | 3 | 4
 
 interface FormData {
   // Personal Info
@@ -60,13 +61,6 @@ interface FormData {
     businessLicense: File | null
     portfolio: File[]
   }
-
-  // References
-  references: Array<{
-    name: string
-    phone: string
-    relationship: string
-  }>
 
   // Additional Info
   languages: string[]
@@ -141,16 +135,12 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
       businessLicense: null,
       portfolio: [],
     },
-    references: [
-      { name: '', phone: '', relationship: '' },
-      { name: '', phone: '', relationship: '' },
-    ],
     languages: [],
     certifications: '',
     agreedToTerms: false,
   })
 
-  const progress = (currentStep / 5) * 100
+  const progress = (currentStep / 4) * 100
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -214,17 +204,10 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
     }))
   }
 
-  const handleReferenceChange = (index: number, field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      references: prev.references.map((ref, i) => (i === index ? { ...ref, [field]: value } : ref)),
-    }))
-  }
-
   const validateStep = (step: FormStep): boolean => {
     switch (step) {
       case 1:
-        return (
+        return !!(
           formData.firstName &&
           formData.lastName &&
           formData.phone &&
@@ -232,7 +215,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           formData.nationalId
         )
       case 2:
-        return (
+        return !!(
           formData.businessName &&
           formData.description &&
           formData.experience &&
@@ -240,11 +223,13 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           formData.serviceAreas.length > 0
         )
       case 3:
-        return formData.documents.nationalId && formData.documents.policeClearance
+        const requiresPoliceClearance = formData.services.includes('House Cleaning')
+        return !!(
+          formData.documents.nationalId &&
+          (!requiresPoliceClearance || formData.documents.policeClearance)
+        )
       case 4:
-        return formData.references.every((ref) => ref.name && ref.phone && ref.relationship)
-      case 5:
-        return formData.languages.length > 0 && formData.agreedToTerms
+        return !!(formData.languages.length > 0 && formData.agreedToTerms)
       default:
         return false
     }
@@ -252,7 +237,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
 
   const nextStep = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(5, prev + 1) as FormStep)
+      setCurrentStep((prev) => Math.min(4, prev + 1) as FormStep)
     } else {
       toast.error('Please fill in all required fields')
     }
@@ -268,7 +253,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
       return
     }
 
-    if (!validateStep(5)) {
+    if (!validateStep(4)) {
       toast.error('Please complete all required fields')
       return
     }
@@ -311,10 +296,38 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           }),
         })
 
-        toast.success('Application submitted successfully!')
+        // Trigger celebration animation
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+        })
 
-        // Redirect to welcome page
-        router.push('/provider/welcome')
+        // Multiple confetti bursts
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+          })
+        }, 250)
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+          })
+        }, 400)
+
+        toast.success('🎉 Application submitted successfully! Welcome to Weda.lk!')
+
+        // Redirect to welcome page after a brief delay to show animation
+        setTimeout(() => {
+          router.push('/provider/welcome')
+        }, 2000)
       } else {
         const error = await response.json()
         toast.error(error.message || 'Failed to submit application')
@@ -505,7 +518,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
 
             <div className="space-y-4">
               <div>
-                <Label>National ID Copy *</Label>
+                <Label>National ID Copy / Passport Copy *</Label>
                 <div className="mt-2 rounded-lg border-2 border-dashed border-gray-300 p-4">
                   <input
                     type="file"
@@ -524,63 +537,46 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
                     <span className="mt-2 text-sm text-gray-600">
                       {formData.documents.nationalId
                         ? formData.documents.nationalId.name
-                        : 'Click to upload National ID'}
+                        : 'Click to upload National ID or Passport'}
                     </span>
                   </label>
                 </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  Upload either your National ID or Passport copy
+                </p>
               </div>
 
-              <div>
-                <Label>Police Clearance Certificate *</Label>
-                <div className="mt-2 rounded-lg border-2 border-dashed border-gray-300 p-4">
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) =>
-                      e.target.files?.[0] && handleFileUpload('policeClearance', e.target.files[0])
-                    }
-                    className="hidden"
-                    id="police-upload"
-                  />
-                  <label
-                    htmlFor="police-upload"
-                    className="flex cursor-pointer flex-col items-center"
-                  >
-                    <Upload className="h-8 w-8 text-gray-400" />
-                    <span className="mt-2 text-sm text-gray-600">
-                      {formData.documents.policeClearance
-                        ? formData.documents.policeClearance.name
-                        : 'Click to upload Police Clearance'}
-                    </span>
-                  </label>
+              {formData.services.includes('House Cleaning') && (
+                <div>
+                  <Label>Police Clearance Certificate *</Label>
+                  <div className="mt-2 rounded-lg border-2 border-dashed border-gray-300 p-4">
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={(e) =>
+                        e.target.files?.[0] &&
+                        handleFileUpload('policeClearance', e.target.files[0])
+                      }
+                      className="hidden"
+                      id="police-upload"
+                    />
+                    <label
+                      htmlFor="police-upload"
+                      className="flex cursor-pointer flex-col items-center"
+                    >
+                      <Upload className="h-8 w-8 text-gray-400" />
+                      <span className="mt-2 text-sm text-gray-600">
+                        {formData.documents.policeClearance
+                          ? formData.documents.policeClearance.name
+                          : 'Click to upload Police Clearance'}
+                      </span>
+                    </label>
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Required for house cleaning services only
+                  </p>
                 </div>
-              </div>
-
-              <div>
-                <Label>Business License (Optional)</Label>
-                <div className="mt-2 rounded-lg border-2 border-dashed border-gray-300 p-4">
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) =>
-                      e.target.files?.[0] && handleFileUpload('businessLicense', e.target.files[0])
-                    }
-                    className="hidden"
-                    id="license-upload"
-                  />
-                  <label
-                    htmlFor="license-upload"
-                    className="flex cursor-pointer flex-col items-center"
-                  >
-                    <Upload className="h-8 w-8 text-gray-400" />
-                    <span className="mt-2 text-sm text-gray-600">
-                      {formData.documents.businessLicense
-                        ? formData.documents.businessLicense.name
-                        : 'Click to upload Business License'}
-                    </span>
-                  </label>
-                </div>
-              </div>
+              )}
 
               <div>
                 <Label>Portfolio/Work Samples (Optional)</Label>
@@ -626,54 +622,6 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
         )
 
       case 4:
-        return (
-          <div className="space-y-6">
-            <div className="text-primary flex items-center space-x-2">
-              <Phone className="h-5 w-5" />
-              <h3 className="text-lg font-semibold">Professional References</h3>
-            </div>
-
-            <p className="text-sm text-gray-600">
-              Please provide at least 2 professional references who can vouch for your work quality.
-            </p>
-
-            {formData.references.map((reference, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <CardTitle className="text-base">Reference {index + 1}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>Name *</Label>
-                    <Input
-                      value={reference.name}
-                      onChange={(e) => handleReferenceChange(index, 'name', e.target.value)}
-                      placeholder="Reference name"
-                    />
-                  </div>
-                  <div>
-                    <Label>Phone Number *</Label>
-                    <Input
-                      value={reference.phone}
-                      onChange={(e) => handleReferenceChange(index, 'phone', e.target.value)}
-                      placeholder="+94 77 123 4567"
-                    />
-                  </div>
-                  <div>
-                    <Label>Relationship *</Label>
-                    <Input
-                      value={reference.relationship}
-                      onChange={(e) => handleReferenceChange(index, 'relationship', e.target.value)}
-                      placeholder="Previous client, employer, etc."
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )
-
-      case 5:
         return (
           <div className="space-y-6">
             <div className="text-primary flex items-center space-x-2">
@@ -736,7 +684,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold">Provider Application</h2>
-              <p className="text-gray-600">Step {currentStep} of 5</p>
+              <p className="text-gray-600">Step {currentStep} of 4</p>
             </div>
             <Button variant="ghost" onClick={onClose}>
               <X className="h-5 w-5" />
@@ -753,7 +701,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
             Previous
           </Button>
 
-          {currentStep < 5 ? (
+          {currentStep < 4 ? (
             <Button onClick={nextStep}>
               Next
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -761,7 +709,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting || !validateStep(5)}
+              disabled={isSubmitting || !validateStep(4)}
               className="bg-primary text-white"
             >
               {isSubmitting ? 'Submitting...' : 'Submit Application'}
