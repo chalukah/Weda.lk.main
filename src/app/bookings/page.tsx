@@ -1,49 +1,19 @@
-'use client'
-
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-
-export const dynamic = 'force-dynamic'
-
+import { redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 import { Navbar } from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, Clock, MapPin, User } from 'lucide-react'
 
-export default function BookingsPage() {
-  const sessionResult = useSession({
-    required: false,
-  })
-  const router = useRouter()
+export const dynamic = 'force-dynamic'
 
-  // Safe destructuring with fallbacks
-  const session = sessionResult?.data || null
-  const status = sessionResult?.status || 'loading'
+export default async function BookingsPage() {
+  const session = await getServerSession(authOptions)
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
-    }
-  }, [status, router])
-
-  if (status === 'loading') {
-    return (
-      <div className="bg-background min-h-screen">
-        <Navbar />
-        <main className="pt-16">
-          <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-            <div>Loading...</div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
-  }
-
-  if (status === 'unauthenticated') {
-    return null
+  if (!session) {
+    redirect('/login')
   }
 
   return (

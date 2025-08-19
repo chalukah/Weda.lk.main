@@ -1,11 +1,6 @@
-'use client'
-
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-
-export const dynamic = 'force-dynamic'
-
+import { redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 import { Navbar } from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,40 +8,17 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Briefcase, Plus, Settings, Eye } from 'lucide-react'
 
-export default function ProviderServicesPage() {
-  const sessionResult = useSession({
-    required: false,
-  })
-  const router = useRouter()
+export const dynamic = 'force-dynamic'
 
-  // Safe destructuring with fallbacks
-  const session = sessionResult?.data || null
-  const status = sessionResult?.status || 'loading'
+export default async function ProviderServicesPage() {
+  const session = await getServerSession(authOptions)
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
-    } else if (status === 'authenticated' && session?.user?.role === 'CUSTOMER') {
-      router.push('/dashboard')
-    }
-  }, [status, session, router])
-
-  if (status === 'loading') {
-    return (
-      <div className="bg-background min-h-screen">
-        <Navbar />
-        <main className="pt-16">
-          <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-            <div>Loading...</div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
+  if (!session) {
+    redirect('/login')
   }
 
-  if (status === 'unauthenticated' || session?.user?.role === 'CUSTOMER') {
-    return null
+  if (session.user?.role === 'CUSTOMER') {
+    redirect('/dashboard')
   }
 
   return (
@@ -55,71 +27,64 @@ export default function ProviderServicesPage() {
 
       <main className="pt-16">
         <div className="container mx-auto px-4 py-8">
-          <div className="mb-8 flex items-center justify-between">
-            <div>
-              <h1 className="mb-2 text-3xl font-bold">Manage Services</h1>
-              <p className="text-muted-foreground">Control your service offerings and pricing</p>
-            </div>
-            <Button>
+          <div className="mb-8">
+            <h1 className="mb-2 text-3xl font-bold">My Services</h1>
+            <p className="text-muted-foreground">
+              Manage your service offerings and track performance
+            </p>
+          </div>
+
+          {/* Add Service Button */}
+          <div className="mb-6">
+            <Button className="w-full md:w-auto">
               <Plus className="mr-2 h-4 w-4" />
-              Add Service
+              Add New Service
             </Button>
           </div>
 
-          {/* Service Status */}
-          <div className="mb-8 grid gap-6 md:grid-cols-3">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Profile Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="secondary">Pending Verification</Badge>
-                </div>
-                <p className="text-muted-foreground mt-2 text-xs">
-                  Complete verification to start receiving bookings
+          {/* Services Grid */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* Empty State */}
+            <Card className="md:col-span-2 lg:col-span-3">
+              <CardContent className="text-muted-foreground py-12 text-center">
+                <Briefcase className="mx-auto mb-4 h-12 w-12 opacity-50" />
+                <h3 className="mb-2 text-lg font-medium">No Services Added Yet</h3>
+                <p className="mb-4">
+                  Start by adding your first service offering to attract customers.
                 </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Active Services</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-muted-foreground text-xs">Services currently offered</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">This Month</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-muted-foreground text-xs">Bookings received</p>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Your First Service
+                </Button>
               </CardContent>
             </Card>
           </div>
 
-          {/* Empty State */}
-          <Card>
-            <CardContent className="text-muted-foreground py-12 text-center">
-              <Briefcase className="mx-auto mb-4 h-12 w-12 opacity-50" />
-              <h3 className="mb-2 text-lg font-medium">No Services Yet</h3>
-              <p className="mb-4">
-                Start by adding the services you offer. You can set pricing, availability, and
-                service areas.
-              </p>
-              <div className="space-y-2">
-                <Button className="w-full max-w-xs">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Your First Service
-                </Button>
-                <p className="text-muted-foreground text-xs">
-                  Complete your profile verification to start receiving bookings
-                </p>
+          {/* Service Categories */}
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Settings className="h-5 w-5" />
+                <span>Popular Service Categories</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {[
+                  'Home Cleaning',
+                  'Plumbing',
+                  'Electrical Work',
+                  'Gardening',
+                  'Tutoring',
+                  'Delivery Services',
+                  'Photography',
+                  'Event Planning',
+                  'Repair Services',
+                ].map((category) => (
+                  <Badge key={category} variant="outline" className="justify-center py-2">
+                    {category}
+                  </Badge>
+                ))}
               </div>
             </CardContent>
           </Card>
