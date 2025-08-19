@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from '@/i18n/routing'
+import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
 export const dynamic = 'force-dynamic'
@@ -21,10 +21,16 @@ import {
   Sparkles,
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
+import Image from 'next/image'
 
 export default function ProviderWelcomePage() {
   const router = useRouter()
-  const { data: session } = useSession()
+  const sessionResult = useSession({ required: false })
+
+  // Safe destructuring with fallbacks
+  const session = sessionResult?.data || null
+  const status = sessionResult?.status || 'loading'
+
   const [animationStep, setAnimationStep] = useState(0)
   const [showContent, setShowContent] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -149,8 +155,14 @@ export default function ProviderWelcomePage() {
           <div
             className={`mb-8 transition-all duration-1000 ${animationStep >= 1 ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}
           >
-            <div className="bg-primary mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full shadow-lg">
-              <Sparkles className="h-12 w-12 text-white" />
+            <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full shadow-lg">
+              <Image
+                src="/logo.png"
+                alt="වැඩ.lk Logo"
+                width={96}
+                height={96}
+                className="rounded-full"
+              />
             </div>
           </div>
 
@@ -278,7 +290,7 @@ export default function ProviderWelcomePage() {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/en')}
               className="border-2 hover:bg-gray-50"
             >
               <Home className="mr-2 h-5 w-5" />

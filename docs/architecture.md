@@ -1,26 +1,29 @@
 # Weda.lk Full-Stack Architecture
 
-**Version:** 1.0  
-**Date:** 2025-08-11  
-**Author:** Winston (Architect)
+**Version:** 1.1  
+**Date:** 2025-08-18  
+**Author:** Winston (Architect)  
+**Last Updated:** Architecture updated with internationalization and enhanced UI features
 
 ## Introduction
 
-This document defines the comprehensive technical architecture for Weda.lk, Sri Lanka's leading trusted home services marketplace platform. The architecture is designed to support 10,000+ concurrent users, handle police-verified service provider onboarding, and facilitate secure transactions through an escrow payment system.
+This document defines the comprehensive technical architecture for Weda.lk, Sri Lanka's leading trusted home services marketplace platform. The architecture is designed to support 10,000+ concurrent users, handle police-verified service provider onboarding, facilitate secure transactions through an escrow payment system, and provide multilingual support for Sri Lanka's diverse population.
 
 ### Project Overview
 
 - **Platform Type:** Home Services Marketplace
 - **Target Market:** Sri Lanka (Western, Central, Southern provinces)
+- **Languages Supported:** English, Sinhala (with locale-specific routing)
 - **Key Differentiator:** Police-verified service providers
 - **Revenue Model:** 23% commission (18% provider + 5% customer)
 - **Primary Users:** Homeowners, Service Providers, Admin Staff
+- **Platform Features:** Multilingual, Dark/Light themes, Mobile-responsive, Location-aware
 
 ## High Level Architecture
 
 ### Technical Summary
 
-Modern full-stack web application built with Next.js 15, leveraging server-side rendering for SEO optimization and optimal performance. The architecture follows a monolithic-first approach with modular design patterns, enabling rapid development while maintaining clear separation of concerns for future microservices migration.
+Modern full-stack web application built with Next.js 15, leveraging server-side rendering for SEO optimization and optimal performance. The architecture follows a monolithic-first approach with modular design patterns, enabling rapid development while maintaining clear separation of concerns for future microservices migration. Features comprehensive internationalization (i18n) support using next-intl for multi-language content delivery and locale-specific routing.
 
 ### Platform Choice
 
@@ -43,27 +46,32 @@ Modern full-stack web application built with Next.js 15, leveraging server-side 
 3. **Component-Based Frontend:** Reusable React components with shadcn/ui
 4. **Event-Driven Architecture:** For real-time notifications and status updates
 5. **Layered Architecture:** Presentation → Business Logic → Data Access
+6. **Internationalization-First:** Built-in multi-language support with locale routing
+7. **Progressive Enhancement:** Mobile-first responsive design with graceful degradation
+8. **Hydration-Safe SSR:** Client-server consistency with hydration mismatch prevention
 
 ## Tech Stack
 
-| Category               | Technology      | Version | Rationale                                     |
-| ---------------------- | --------------- | ------- | --------------------------------------------- |
-| **Frontend Framework** | Next.js         | 15.x    | SSR/SSG capabilities, optimal SEO, API routes |
-| **Frontend Library**   | React           | 19.x    | Component reusability, rich ecosystem         |
-| **Language**           | TypeScript      | 5.x     | Type safety, developer productivity           |
-| **Styling**            | Tailwind CSS    | 3.x     | Utility-first, rapid development              |
-| **UI Components**      | shadcn/ui       | Latest  | Consistent design system, accessibility       |
-| **Database**           | PostgreSQL      | 15.x    | ACID compliance, complex queries, reliability |
-| **Caching**            | Redis           | 7.x     | Session management, fast data access          |
-| **ORM**                | Prisma          | 5.x     | Type-safe database access, migrations         |
-| **Authentication**     | NextAuth.js     | 5.x     | Multiple providers, secure session management |
-| **Payment Gateway**    | PayHere/Stripe  | Latest  | Local market leader, international support    |
-| **File Storage**       | AWS S3          | Latest  | Scalable document storage, CDN integration    |
-| **Maps**               | Google Maps API | Latest  | Location services, geocoding                  |
-| **SMS/Email**          | Twilio/SendGrid | Latest  | OTP verification, notifications               |
-| **Animation**          | GSAP            | 3.x     | Smooth micro-interactions, trust-building     |
-| **Testing**            | Jest/Playwright | Latest  | Unit testing, E2E testing                     |
-| **Deployment**         | Vercel          | Latest  | Auto-scaling, edge optimization               |
+| Category                 | Technology      | Version | Rationale                                     |
+| ------------------------ | --------------- | ------- | --------------------------------------------- |
+| **Frontend Framework**   | Next.js         | 15.x    | SSR/SSG capabilities, optimal SEO, API routes |
+| **Frontend Library**     | React           | 19.x    | Component reusability, rich ecosystem         |
+| **Language**             | TypeScript      | 5.x     | Type safety, developer productivity           |
+| **Styling**              | Tailwind CSS    | 3.x     | Utility-first, rapid development              |
+| **UI Components**        | shadcn/ui       | Latest  | Consistent design system, accessibility       |
+| **Internationalization** | next-intl       | Latest  | Multi-language support, locale routing        |
+| **Theme System**         | next-themes     | Latest  | Dark/light mode with system preference        |
+| **Database**             | PostgreSQL      | 15.x    | ACID compliance, complex queries, reliability |
+| **Caching**              | Redis           | 7.x     | Session management, fast data access          |
+| **ORM**                  | Prisma          | 5.x     | Type-safe database access, migrations         |
+| **Authentication**       | NextAuth.js     | 5.x     | Multiple providers, secure session management |
+| **Payment Gateway**      | PayHere/Stripe  | Latest  | Local market leader, international support    |
+| **File Storage**         | AWS S3          | Latest  | Scalable document storage, CDN integration    |
+| **Maps**                 | Google Maps API | Latest  | Location services, geocoding                  |
+| **SMS/Email**            | Twilio/SendGrid | Latest  | OTP verification, notifications               |
+| **Animation**            | GSAP            | 3.x     | Smooth micro-interactions, trust-building     |
+| **Testing**              | Jest/Playwright | Latest  | Unit testing, E2E testing                     |
+| **Deployment**           | Vercel          | Latest  | Auto-scaling, edge optimization               |
 
 ## Data Models
 
@@ -534,11 +542,12 @@ CREATE INDEX idx_service_providers_location ON service_providers USING GIN(servi
 
 ```
 src/
-├── app/                    # Next.js 15 App Router
-│   ├── (auth)/            # Auth route group
-│   ├── (customer)/        # Customer dashboard
-│   ├── (provider)/        # Provider dashboard
-│   ├── (admin)/           # Admin console
+├── app/                    # Next.js 15 App Router with i18n
+│   ├── [locale]/          # Internationalized routes
+│   │   ├── (auth)/        # Auth route group
+│   │   ├── (customer)/    # Customer dashboard
+│   │   ├── (provider)/    # Provider dashboard
+│   │   └── (admin)/       # Admin console
 │   └── api/               # API routes
 ├── components/            # Reusable components
 │   ├── ui/               # shadcn/ui components
@@ -549,7 +558,11 @@ src/
 │   ├── auth.ts          # Authentication logic
 │   ├── db.ts            # Database client
 │   ├── payments.ts      # Payment integrations
+│   ├── locations.ts     # Location services
 │   └── utils.ts         # General utilities
+├── i18n/                 # Internationalization
+│   ├── routing.ts       # Locale routing configuration
+│   └── request.ts       # Request configuration
 ├── hooks/               # Custom React hooks
 ├── types/               # TypeScript type definitions
 └── styles/              # Global styles
@@ -575,33 +588,47 @@ const useProviders = (searchCriteria: SearchCriteria) => {
   })
 }
 
-// Context for theme and language
-const AppContext = createContext<{
-  theme: 'light' | 'dark'
-  language: 'en' | 'si' | 'ta'
-  setTheme: (theme: 'light' | 'dark') => void
-  setLanguage: (lang: 'en' | 'si' | 'ta') => void
-}>()
+// Built-in next-intl for internationalization
+import { useTranslations, useLocale } from 'next-intl'
+
+// Theme context with next-themes
+import { useTheme } from 'next-themes'
+
+// Location state management
+interface LocationState {
+  currentLocation: Location | null
+  isDetecting: boolean
+  setLocation: (location: Location) => void
+}
 ```
 
 ### Routing Strategy
 
 ```typescript
-// App Router structure
+// Internationalized App Router structure with locale prefixes
 app/
-├── page.tsx                    # Landing page
-├── search/
-│   └── page.tsx               # Service search
-├── provider/
-│   └── [id]/
-│       └── page.tsx           # Provider profile
-├── booking/
-│   ├── new/page.tsx           # New booking form
-│   └── [id]/page.tsx          # Booking details
-├── dashboard/
-│   ├── customer/              # Customer routes
-│   └── provider/              # Provider routes
-└── admin/                     # Admin routes (protected)
+├── [locale]/                   # Locale-based routing (/en/, /si/)
+│   ├── page.tsx               # Landing page
+│   ├── search/
+│   │   └── page.tsx           # Service search
+│   ├── provider/
+│   │   └── [id]/
+│   │       └── page.tsx       # Provider profile
+│   ├── booking/
+│   │   ├── new/page.tsx       # New booking form
+│   │   └── [id]/page.tsx      # Booking details
+│   ├── dashboard/
+│   │   ├── customer/          # Customer routes
+│   │   └── provider/          # Provider routes
+│   └── admin/                 # Admin routes (protected)
+└── api/                       # API routes (not localized)
+
+// Routing configuration
+export const routing = defineRouting({
+  locales: ['en', 'si'],
+  defaultLocale: 'en',
+  localePrefix: 'always',
+})
 ```
 
 ## Backend Architecture
@@ -703,12 +730,18 @@ weda-lk/
 │   ├── prd.md               # Product requirements
 │   ├── front-end-spec.md    # UX specifications
 │   └── architecture.md      # This document
+├── messages/                 # Internationalization files
+│   ├── en.json              # English translations
+│   └── si.json              # Sinhala translations
 ├── public/                   # Static assets
 │   ├── images/              # Images and icons
-│   └── locales/             # Translation files
+│   └── logo.png             # Brand logo
 ├── src/                     # Application source code
-│   ├── app/                 # Next.js App Router
+│   ├── app/                 # Next.js App Router with i18n
 │   ├── components/          # React components
+│   ├── i18n/                # Internationalization config
+│   │   ├── routing.ts       # Locale routing
+│   │   └── request.ts       # Request configuration
 │   ├── lib/                 # Utilities and configs
 │   ├── hooks/               # Custom React hooks
 │   ├── types/               # TypeScript definitions
@@ -722,11 +755,170 @@ weda-lk/
 │   └── utils/              # Test utilities
 ├── .env.example             # Environment variables template
 ├── .gitignore              # Git ignore rules
-├── next.config.ts          # Next.js configuration
+├── next.config.ts          # Next.js with i18n configuration
 ├── package.json            # Dependencies and scripts
 ├── tsconfig.json           # TypeScript configuration
 ├── tailwind.config.ts      # Tailwind CSS configuration
 └── README.md               # Project documentation
+```
+
+## Internationalization Architecture
+
+### Multi-Language Support
+
+```typescript
+// Language Configuration
+export const routing = defineRouting({
+  locales: ['en', 'si'], // English, Sinhala
+  defaultLocale: 'en',
+  localePrefix: 'always',
+})
+
+// Component Usage
+import { useTranslations } from 'next-intl'
+
+function Component() {
+  const t = useTranslations('namespace')
+  return <h1>{t('title')}</h1>
+}
+
+// Locale-aware Navigation
+import { Link, useRouter } from '@/i18n/routing'
+
+// Automatically prefixes with current locale
+<Link href="/services">{t('findServices')}</Link>
+```
+
+### Translation Management
+
+```json
+// messages/en.json
+{
+  "navbar": {
+    "findServices": "Find Services",
+    "howItWorks": "How it Works",
+    "becomeProvider": "Become a Provider"
+  },
+  "hero": {
+    "title": "Find Trusted Service Providers in Sri Lanka",
+    "subtitle": "Connect with verified professionals"
+  }
+}
+
+// messages/si.json
+{
+  "navbar": {
+    "findServices": "සේවා හොයීම",
+    "howItWorks": "එය ක්‍රියා කරන්නේ කෙසේද",
+    "becomeProvider": "සේවා පියදීමකරුවෙකු වෙන්න"
+  }
+}
+```
+
+### SEO and Locale Handling
+
+```typescript
+// app/[locale]/layout.tsx
+import { notFound } from 'next/navigation'
+import { routing } from '@/i18n/routing'
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
+
+export default async function LocaleLayout({
+  children,
+  params: { locale },
+}: {
+  children: React.ReactNode
+  params: { locale: string }
+}) {
+  // Validate locale
+  if (!routing.locales.includes(locale as any)) {
+    notFound()
+  }
+
+  return (
+    <html lang={locale}>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+## Enhanced UI Architecture
+
+### Theme System
+
+```typescript
+// Built-in dark/light theme support
+import { ThemeProvider } from 'next-themes'
+import { useTheme } from 'next-themes'
+
+// Theme toggle component
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme()
+
+  return (
+    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+      Toggle Theme
+    </button>
+  )
+}
+```
+
+### Location Services
+
+```typescript
+// Location detection and management
+interface Location {
+  address: string
+  city: string
+  district: string
+  coordinates?: {
+    lat: number
+    lng: number
+  }
+}
+
+// Geolocation integration
+const detectLocation = async (): Promise<Location | null> => {
+  try {
+    const position = await navigator.geolocation.getCurrentPosition()
+    // Reverse geocode coordinates to location data
+    return await reverseGeocode(position.coords)
+  } catch {
+    return null // Fallback to default location
+  }
+}
+```
+
+### Authentication Integration
+
+```typescript
+// Enhanced NextAuth.js setup with profile management
+import { useSession, signOut } from 'next-auth/react'
+import { DropdownMenu, Avatar } from '@/components/ui'
+
+function ProfileDropdown() {
+  const { data: session } = useSession()
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Avatar src={session?.user?.image} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard">Dashboard</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => signOut()}>
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
 ```
 
 ## Development Workflow
@@ -786,20 +978,33 @@ npm run format
 ### Production Environment (Vercel)
 
 ```yaml
+# next.config.ts
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
+
+const nextConfig = {
+  output: 'standalone',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+}
+
+export default withNextIntl(nextConfig)
+
 # vercel.json
 {
   'buildCommand': 'npm run build',
   'devCommand': 'npm run dev',
   'installCommand': 'npm install',
   'framework': 'nextjs',
-  'env':
-    {
-      'DATABASE_URL': '@database-url',
-      'REDIS_URL': '@redis-url',
-      'NEXTAUTH_SECRET': '@nextauth-secret',
-      'PAYHERE_MERCHANT_ID': '@payhere-merchant-id',
-      'STRIPE_SECRET_KEY': '@stripe-secret-key',
-    },
+  'env': {
+    'DATABASE_URL': '@database-url',
+    'REDIS_URL': '@redis-url',
+    'NEXTAUTH_SECRET': '@nextauth-secret',
+    'PAYHERE_MERCHANT_ID': '@payhere-merchant-id',
+    'STRIPE_SECRET_KEY': '@stripe-secret-key',
+  },
 }
 ```
 
@@ -979,4 +1184,12 @@ const trackBookingCreated = (bookingId: string) => {
 
 This architecture provides a solid foundation for Weda.lk's marketplace platform, designed to handle the specific requirements of the Sri Lankan market while maintaining scalability and security. The monolithic-first approach enables rapid development and deployment, while the modular design allows for future evolution into microservices as the platform grows.
 
-The architecture prioritizes user trust through verification systems, payment security through escrow mechanisms, and operational efficiency through comprehensive monitoring and observability.
+Key architectural improvements in v1.1:
+
+- **Internationalization-First Design**: Full support for English and Sinhala with locale-specific routing
+- **Enhanced User Experience**: Dark/light theme support, improved mobile responsiveness, location-aware services
+- **Authentication Excellence**: Integrated NextAuth.js with profile management and session handling
+- **SSR Optimization**: Hydration-safe rendering for consistent client-server behavior
+- **Accessibility Focus**: Comprehensive screen reader support and keyboard navigation
+
+The architecture prioritizes user trust through verification systems, payment security through escrow mechanisms, cultural accessibility through multi-language support, and operational efficiency through comprehensive monitoring and observability.

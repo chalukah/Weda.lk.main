@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { Link } from '@/i18n/routing'
+import NextLink from 'next/link'
 
 export default function DemoPage() {
   return (

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { EmailService } from '@/lib/email'
-import { SubscriptionService } from '@/lib/subscription'
 
 // This endpoint is now for creating service connections (no payment processing)
 export async function POST(request: NextRequest) {

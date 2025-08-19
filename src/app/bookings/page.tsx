@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useRouter } from '@/i18n/routing'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export const dynamic = 'force-dynamic'
@@ -13,8 +13,14 @@ import { Badge } from '@/components/ui/badge'
 import { Calendar, Clock, MapPin, User } from 'lucide-react'
 
 export default function BookingsPage() {
-  const { data: session, status } = useSession()
+  const sessionResult = useSession({
+    required: false,
+  })
   const router = useRouter()
+
+  // Safe destructuring with fallbacks
+  const session = sessionResult?.data || null
+  const status = sessionResult?.status || 'loading'
 
   useEffect(() => {
     if (status === 'unauthenticated') {

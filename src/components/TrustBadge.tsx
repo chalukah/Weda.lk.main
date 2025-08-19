@@ -3,6 +3,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Shield, CreditCard, Award, CheckCircle, AlertCircle, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 export type VerificationStatus =
   | 'police_verified'
@@ -19,11 +20,11 @@ interface TrustBadgeProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-const badgeConfig = {
+const getBadgeConfig = (t: (key: string) => string) => ({
   police_verified: {
     icon: Shield,
-    label: 'Police Verified',
-    description: 'Background checked by Sri Lankan Police',
+    label: t('policeVerified'),
+    description: t('policeVerifiedDesc'),
     color: {
       active: 'bg-green-500 text-white border-green-600',
       expired: 'bg-red-100 text-red-800 border-red-300',
@@ -32,8 +33,8 @@ const badgeConfig = {
   },
   identity_verified: {
     icon: CreditCard,
-    label: 'Identity Verified',
-    description: 'National ID verified',
+    label: t('identityVerified'),
+    description: t('identityVerifiedDesc'),
     color: {
       active: 'bg-blue-500 text-white border-blue-600',
       expired: 'bg-red-100 text-red-800 border-red-300',
@@ -42,8 +43,8 @@ const badgeConfig = {
   },
   professional_certified: {
     icon: Award,
-    label: 'Professional Certified',
-    description: 'Industry certifications verified',
+    label: t('professionalCertified'),
+    description: t('professionalCertifiedDesc'),
     color: {
       active: 'bg-amber-500 text-white border-amber-600',
       expired: 'bg-red-100 text-red-800 border-red-300',
@@ -52,15 +53,15 @@ const badgeConfig = {
   },
   platform_verified: {
     icon: CheckCircle,
-    label: 'Platform Verified',
-    description: 'Verified by Weda.lk team',
+    label: t('platformVerified'),
+    description: t('platformVerifiedDesc'),
     color: {
       active: 'bg-slate-500 text-white border-slate-600',
       expired: 'bg-red-100 text-red-800 border-red-300',
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
     },
   },
-}
+})
 
 const sizeConfig = {
   sm: {
@@ -87,6 +88,8 @@ export function TrustBadge({
   showTooltip = true,
   size = 'md',
 }: TrustBadgeProps) {
+  const t = useTranslations('trustBadges')
+  const badgeConfig = getBadgeConfig(t)
   const config = badgeConfig[type]
   const sizeStyles = sizeConfig[size]
   const Icon = config.icon
@@ -118,8 +121,8 @@ export function TrustBadge({
         {badgeContent}
         <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform rounded-lg bg-slate-900 px-3 py-2 text-sm whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           {config.description}
-          {state === 'expired' && ' (Expired)'}
-          {state === 'pending' && ' (Pending Review)'}
+          {state === 'expired' && ` ${t('expired')}`}
+          {state === 'pending' && ` ${t('pendingReview')}`}
           <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-slate-900"></div>
         </div>
       </div>

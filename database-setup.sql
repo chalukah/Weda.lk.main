@@ -44,6 +44,21 @@ CREATE TABLE IF NOT EXISTS service_providers (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Table: verification_documents
+-- Stores provider verification documents (passports, IDs, etc.)
+CREATE TABLE IF NOT EXISTS verification_documents (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    provider_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    document_type TEXT NOT NULL CHECK (document_type IN ('NATIONAL_ID', 'POLICE_CLEARANCE', 'BUSINESS_REGISTRATION', 'PROFESSIONAL_CERTIFICATE', 'INSURANCE', 'TAX_REGISTRATION', 'PASSPORT')),
+    file_url TEXT NOT NULL,
+    status TEXT DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'VERIFIED', 'REJECTED')),
+    reviewed_at TIMESTAMP WITH TIME ZONE,
+    reviewed_by UUID REFERENCES auth.users(id),
+    expiry_date TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Table: users (public schema)
 -- Stores user profile information
 CREATE TABLE IF NOT EXISTS users (
@@ -80,12 +95,16 @@ CREATE INDEX IF NOT EXISTS idx_service_providers_user_id ON service_providers(us
 CREATE INDEX IF NOT EXISTS idx_service_providers_is_active ON service_providers(is_active);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_verification_documents_provider_id ON verification_documents(provider_id);
+CREATE INDEX IF NOT EXISTS idx_verification_documents_status ON verification_documents(status);
+CREATE INDEX IF NOT EXISTS idx_verification_documents_document_type ON verification_documents(document_type);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE provider_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE service_providers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE verification_documents ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
 
@@ -120,6 +139,31 @@ CREATE POLICY "Users can view their own profile" ON user_profiles
 CREATE POLICY "Users can update their own profile" ON user_profiles
     FOR UPDATE USING (auth.uid() = user_id);
 
+-- verification_documents policies
+CREATE POLICY "Providers can view their own documents" ON verification_documents
+    FOR SELECT USING (auth.uid() = provider_id);
+
+CREATE POLICY "Providers can insert their own documents" ON verification_documents
+    FOR INSERT WITH CHECK (auth.uid() = provider_id);
+
+CREATE POLICY "Admins can view all documents" ON verification_documents
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE users.id = auth.uid() 
+            AND users.role = 'ADMIN'
+        )
+    );
+
+CREATE POLICY "Admins can update all documents" ON verification_documents
+    FOR UPDATE USING (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE users.id = auth.uid() 
+            AND users.role = 'ADMIN'
+        )
+    );
+
 -- Functions to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -147,5 +191,10 @@ CREATE TRIGGER update_users_updated_at
 
 CREATE TRIGGER update_user_profiles_updated_at
     BEFORE UPDATE ON user_profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_verification_documents_updated_at
+    BEFORE UPDATE ON verification_documents
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();

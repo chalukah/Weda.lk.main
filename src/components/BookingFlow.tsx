@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { LocationPicker, Location } from './LocationPicker'
 import { ProviderCard, Provider } from './ProviderCard'
 import { TrustBadge } from './TrustBadge'
+import { useTranslations } from 'next-intl'
 import {
   Calendar,
   Clock,
@@ -50,11 +51,11 @@ export interface BookingData {
 type BookingStep = 'service' | 'schedule' | 'details' | 'payment' | 'confirmation'
 
 const serviceTypes = [
-  { id: 'plumbing_repair', name: 'Pipe Repair', price: 2500 },
-  { id: 'plumbing_installation', name: 'Fixture Installation', price: 4000 },
-  { id: 'plumbing_maintenance', name: 'Maintenance Check', price: 1500 },
-  { id: 'plumbing_emergency', name: 'Emergency Service', price: 6000 },
-  { id: 'custom', name: 'Other (Specify)', price: 0 },
+  { id: 'plumbing_repair', price: 2500 },
+  { id: 'plumbing_installation', price: 4000 },
+  { id: 'plumbing_maintenance', price: 1500 },
+  { id: 'plumbing_emergency', price: 6000 },
+  { id: 'custom', price: 0 },
 ]
 
 const timeSlots = [
@@ -69,6 +70,7 @@ const timeSlots = [
 ]
 
 export function BookingFlow({ provider, onComplete, onCancel, className }: BookingFlowProps) {
+  const t = useTranslations('booking')
   const [currentStep, setCurrentStep] = useState<BookingStep>('service')
   const [bookingData, setBookingData] = useState<Partial<BookingData>>({
     providerId: provider.id,
@@ -76,11 +78,19 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
   })
 
   const steps = [
-    { id: 'service', title: 'Service', description: 'Select service type' },
-    { id: 'schedule', title: 'Schedule', description: 'Pick date & time' },
-    { id: 'details', title: 'Details', description: 'Location & requirements' },
-    { id: 'payment', title: 'Payment', description: 'Review & pay' },
-    { id: 'confirmation', title: 'Complete', description: 'Booking confirmed' },
+    { id: 'service', title: t('stepTitles.service'), description: t('stepDescriptions.service') },
+    {
+      id: 'schedule',
+      title: t('stepTitles.schedule'),
+      description: t('stepDescriptions.schedule'),
+    },
+    { id: 'details', title: t('stepTitles.details'), description: t('stepDescriptions.details') },
+    { id: 'payment', title: t('stepTitles.payment'), description: t('stepDescriptions.payment') },
+    {
+      id: 'confirmation',
+      title: t('stepTitles.complete'),
+      description: t('stepDescriptions.complete'),
+    },
   ]
 
   const currentStepIndex = steps.findIndex((step) => step.id === currentStep)
@@ -149,7 +159,7 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
         return (
           <div className="space-y-4">
             <div>
-              <h3 className="text-foreground mb-4 font-medium">Select Service Type</h3>
+              <h3 className="text-foreground mb-4 font-medium">{t('selectServiceType')}</h3>
               <div className="grid gap-3">
                 {serviceTypes.map((service) => (
                   <button
@@ -163,7 +173,7 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
                         : 'border-border'
                     )}
                   >
-                    <span className="font-medium">{service.name}</span>
+                    <span className="font-medium">{t(`serviceTypes.${service.id}`)}</span>
                     {service.price > 0 && (
                       <span className="text-muted-foreground">
                         LKR {service.price.toLocaleString()}
@@ -180,11 +190,13 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
         return (
           <div className="space-y-4">
             <div>
-              <h3 className="text-foreground mb-4 font-medium">Choose Date & Time</h3>
+              <h3 className="text-foreground mb-4 font-medium">{t('chooseDateAndTime')}</h3>
 
               {/* Date Selection */}
               <div className="mb-6">
-                <label className="text-foreground mb-2 block text-sm font-medium">Date</label>
+                <label className="text-foreground mb-2 block text-sm font-medium">
+                  {t('date')}
+                </label>
                 <Input
                   type="date"
                   min={new Date().toISOString().split('T')[0]}
@@ -201,7 +213,7 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
               {/* Time Selection */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Available Times
+                  {t('availableTimes')}
                 </label>
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                   {timeSlots.map((time) => (
@@ -241,36 +253,34 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
           <div className="space-y-6">
             {/* Location */}
             <div>
-              <h4 className="text-foreground mb-3 font-medium">Service Location</h4>
+              <h4 className="text-foreground mb-3 font-medium">{t('serviceLocation')}</h4>
               <LocationPicker
                 value={bookingData.location}
                 onChange={(location) => setBookingData({ ...bookingData, location })}
                 variant="detect"
-                placeholder="Enter service address"
+                placeholder={t('enterServiceAddress')}
               />
             </div>
 
             {/* Service Details */}
             <div>
-              <h4 className="text-foreground mb-3 font-medium">Service Requirements</h4>
+              <h4 className="text-foreground mb-3 font-medium">{t('serviceRequirements')}</h4>
               <textarea
                 value={bookingData.serviceDetails || ''}
                 onChange={(e) => setBookingData({ ...bookingData, serviceDetails: e.target.value })}
-                placeholder="Describe the issue or work needed in detail..."
+                placeholder={t('describeWork')}
                 className="border-border h-24 w-full resize-none rounded-lg border p-3 text-sm"
               />
             </div>
 
             {/* Photo Upload */}
             <div>
-              <h4 className="text-foreground mb-3 font-medium">Photos (Optional)</h4>
+              <h4 className="text-foreground mb-3 font-medium">{t('photosOptional')}</h4>
               <div className="border-border rounded-lg border-2 border-dashed p-8 text-center">
                 <Camera className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
-                <p className="text-muted-foreground mb-2 text-sm">
-                  Upload photos to help the provider understand the work needed
-                </p>
+                <p className="text-muted-foreground mb-2 text-sm">{t('uploadPhotosHelp')}</p>
                 <Button variant="outline" size="sm">
-                  Choose Files
+                  {t('chooseFiles')}
                 </Button>
               </div>
             </div>
@@ -283,20 +293,20 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
             {/* Cost Breakdown */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Cost Breakdown</CardTitle>
+                <CardTitle className="text-base">{t('costBreakdown')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Service Cost</span>
+                  <span className="text-muted-foreground">{t('serviceCost')}</span>
                   <span>LKR {bookingData.estimatedCost?.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Platform Fee (23%)</span>
+                  <span className="text-muted-foreground">{t('platformFee')}</span>
                   <span>LKR {bookingData.platformFee?.toLocaleString()}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-medium">
-                  <span>Total</span>
+                  <span>{t('total')}</span>
                   <span>LKR {bookingData.totalCost?.toLocaleString()}</span>
                 </div>
               </CardContent>
@@ -304,12 +314,12 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
 
             {/* Payment Methods */}
             <div>
-              <h4 className="text-foreground mb-3 font-medium">Payment Method</h4>
+              <h4 className="text-foreground mb-3 font-medium">{t('paymentMethod')}</h4>
               <div className="space-y-2">
                 {[
-                  { id: 'card', name: 'Credit/Debit Card', icon: CreditCard },
-                  { id: 'bank', name: 'Bank Transfer', icon: Shield },
-                  { id: 'cash', name: 'Cash on Service', icon: DollarSign },
+                  { id: 'card', icon: CreditCard },
+                  { id: 'bank', icon: Shield },
+                  { id: 'cash', icon: DollarSign },
                 ].map((method) => {
                   const Icon = method.icon
                   return (
@@ -325,7 +335,7 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
                       )}
                     >
                       <Icon className="text-muted-foreground h-5 w-5" />
-                      <span className="font-medium">{method.name}</span>
+                      <span className="font-medium">{t(`paymentMethods.${method.id}`)}</span>
                     </button>
                   )
                 })}
@@ -337,11 +347,8 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
               <div className="flex items-start space-x-3">
                 <Shield className="mt-0.5 h-5 w-5 text-green-600" />
                 <div className="text-sm">
-                  <p className="text-foreground font-medium">Secure Escrow Payment</p>
-                  <p className="text-muted-foreground mt-1">
-                    Payment is held securely until service completion. Funds are only released after
-                    your approval.
-                  </p>
+                  <p className="text-foreground font-medium">{t('secureEscrowPayment')}</p>
+                  <p className="text-muted-foreground mt-1">{t('escrowPaymentDesc')}</p>
                 </div>
               </div>
             </div>
@@ -356,9 +363,11 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
             </div>
 
             <div>
-              <h3 className="text-foreground mb-2 text-xl font-semibold">Booking Confirmed!</h3>
+              <h3 className="text-foreground mb-2 text-xl font-semibold">
+                {t('bookingConfirmed')}
+              </h3>
               <p className="text-muted-foreground">
-                Your service request has been sent to {provider.name}
+                {t('requestSent', { provider: provider.name })}
               </p>
             </div>
 
@@ -366,19 +375,19 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
               <CardContent className="p-6">
                 <div className="space-y-4 text-left">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Booking ID</span>
+                    <span className="text-muted-foreground">{t('bookingId')}</span>
                     <span className="font-medium">
                       WD-{Math.random().toString(36).substring(7).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Service</span>
+                    <span className="text-muted-foreground">{t('service')}</span>
                     <span className="font-medium">
-                      {serviceTypes.find((s) => s.id === bookingData.serviceType)?.name}
+                      {t(`serviceTypes.${bookingData.serviceType}`)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Date & Time</span>
+                    <span className="text-muted-foreground">{t('dateAndTime')}</span>
                     <span className="font-medium">
                       {bookingData.scheduledDateTime?.toLocaleDateString()} at{' '}
                       {bookingData.scheduledDateTime?.toLocaleTimeString([], {
@@ -388,7 +397,7 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total</span>
+                    <span className="text-muted-foreground">{t('total')}</span>
                     <span className="font-medium">
                       LKR {bookingData.totalCost?.toLocaleString()}
                     </span>
@@ -400,11 +409,11 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button variant="outline" className="flex-1">
                 <Phone className="mr-2 h-4 w-4" />
-                Call Provider
+                {t('callProvider')}
               </Button>
               <Button variant="outline" className="flex-1">
                 <MessageCircle className="mr-2 h-4 w-4" />
-                Send Message
+                {t('sendMessage')}
               </Button>
             </div>
           </div>
@@ -472,19 +481,21 @@ export function BookingFlow({ provider, onComplete, onCancel, className }: Booki
       <div className="flex justify-between">
         <Button variant="outline" onClick={handleBack} disabled={currentStep === 'confirmation'}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          {currentStepIndex === 0 ? 'Cancel' : 'Back'}
+          {currentStepIndex === 0 ? t('cancel') : t('back')}
         </Button>
 
         {currentStep === 'confirmation' ? (
-          <Button onClick={() => (window.location.href = '/dashboard')}>Go to Dashboard</Button>
+          <Button onClick={() => (window.location.href = '/dashboard')}>
+            {t('goToDashboard')}
+          </Button>
         ) : currentStep === 'payment' ? (
           <Button onClick={handleComplete} disabled={!canProceed}>
-            Confirm Booking
+            {t('confirmBooking')}
             <CheckCircle className="ml-2 h-4 w-4" />
           </Button>
         ) : (
           <Button onClick={handleNext} disabled={!canProceed}>
-            Next
+            {t('next')}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         )}

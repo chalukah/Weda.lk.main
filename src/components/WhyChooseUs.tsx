@@ -59,18 +59,18 @@ export function WhyChooseUs() {
   }, [trustSlides.length, mounted])
 
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="bg-muted/20 py-16">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-gray-900">{t('title')}</h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">{t('verifiedDesc')}</p>
+          <h2 className="text-foreground mb-4 text-3xl font-bold">{t('title')}</h2>
+          <p className="text-muted-foreground mx-auto max-w-2xl text-lg">{t('verifiedDesc')}</p>
         </div>
 
         <div className="mx-auto max-w-4xl">
-          <Card className="border-0 bg-white shadow-lg">
+          <Card className="bg-card border-0 shadow-lg">
             <CardContent className="p-8 lg:p-12">
               <div className="mb-8 flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-gray-900">Trust & Safety Features</h3>
+                <h3 className="text-foreground text-xl font-semibold">Trust & Safety Features</h3>
                 <div className="flex space-x-2">
                   <Button
                     variant="outline"
@@ -109,7 +109,7 @@ export function WhyChooseUs() {
                               <Star key={i} className="h-5 w-5 fill-current text-yellow-400" />
                             ))}
                           </div>
-                          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-900 italic">
+                          <p className="text-foreground mx-auto max-w-2xl text-lg leading-relaxed italic">
                             {slide.description}
                           </p>
                           <p className="text-primary text-base font-medium">— {slide.author}</p>
@@ -126,10 +126,10 @@ export function WhyChooseUs() {
                             )}
                           </div>
                           <div className="text-left">
-                            <p className="mb-2 text-xl font-semibold text-gray-900">
+                            <p className="text-foreground mb-2 text-xl font-semibold">
                               {slide.title}
                             </p>
-                            <p className="text-base text-gray-600">{slide.details}</p>
+                            <p className="text-muted-foreground text-base">{slide.details}</p>
                           </div>
                         </div>
                       )}
@@ -145,7 +145,7 @@ export function WhyChooseUs() {
                     key={index}
                     onClick={() => setCurrentTrustSlide(index)}
                     className={`h-3 w-3 rounded-full transition-colors ${
-                      index === currentTrustSlide ? 'bg-primary' : 'bg-gray-300'
+                      index === currentTrustSlide ? 'bg-primary' : 'bg-muted'
                     }`}
                   />
                 ))}

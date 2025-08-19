@@ -7,15 +7,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { User, Briefcase, ArrowRight, Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface RoleSelectionProps {
   onRoleSelected?: (role: 'CUSTOMER' | 'PROVIDER' | 'BOTH') => void
 }
 
 export function RoleSelection({ onRoleSelected }: RoleSelectionProps) {
+  const t = useTranslations('roleSelection')
   const [selectedRole, setSelectedRole] = useState<'CUSTOMER' | 'PROVIDER' | 'BOTH' | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const { data: session, update } = useSession()
+  const sessionResult = useSession()
+
+  // Safe destructuring with fallbacks
+  const session = sessionResult?.data || null
+  const update = sessionResult?.update
+
   const router = useRouter()
 
   const handleRoleSelection = async () => {
@@ -66,42 +73,42 @@ export function RoleSelection({ onRoleSelected }: RoleSelectionProps) {
   const roleOptions = [
     {
       id: 'CUSTOMER' as const,
-      title: 'Service Seeker',
-      description: 'Find and book trusted service providers for your home',
+      title: t('serviceSeeker'),
+      description: t('serviceSeekerDesc'),
       icon: User,
       features: [
-        'Browse verified service providers',
-        'Book services with secure payments',
-        'Track service progress',
-        'Leave reviews and ratings',
+        t('features.browseProviders'),
+        t('features.bookServices'),
+        t('features.trackProgress'),
+        t('features.leaveReviews'),
       ],
-      badge: 'Popular Choice',
+      badge: t('popularChoice'),
     },
     {
       id: 'PROVIDER' as const,
-      title: 'Service Provider',
-      description: 'Offer your services and grow your business with Weda.lk',
+      title: t('serviceProvider'),
+      description: t('serviceProviderDesc'),
       icon: Briefcase,
       features: [
-        'Create your professional profile',
-        'Get verified and build trust',
-        'Receive service requests',
-        'Earn with secure payments',
+        t('features.createProfile'),
+        t('features.getVerified'),
+        t('features.receiveRequests'),
+        t('features.earnMoney'),
       ],
-      badge: 'Earn Money',
+      badge: t('earnMoney'),
     },
     {
       id: 'BOTH' as const,
-      title: 'Both Roles',
-      description: 'Use services and offer your own skills on the platform',
+      title: t('bothRoles'),
+      description: t('bothRolesDesc'),
       icon: ArrowRight,
       features: [
-        'Full customer access',
-        'Full provider access',
-        'Switch between roles easily',
-        'Maximum platform benefits',
+        t('features.fullCustomer'),
+        t('features.fullProvider'),
+        t('features.switchRoles'),
+        t('features.maxBenefits'),
       ],
-      badge: 'Best Value',
+      badge: t('bestValue'),
     },
   ]
 
@@ -109,10 +116,8 @@ export function RoleSelection({ onRoleSelected }: RoleSelectionProps) {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 p-4">
       <div className="w-full max-w-6xl">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold text-gray-900">Welcome to Weda.lk! 🎉</h1>
-          <p className="text-lg text-gray-600">
-            How would you like to use our platform? You can always change this later.
-          </p>
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">{t('welcomeTitle')}</h1>
+          <p className="text-lg text-gray-600">{t('welcomeDesc')}</p>
         </div>
 
         <div className="mb-8 grid gap-6 md:grid-cols-3">
@@ -170,17 +175,17 @@ export function RoleSelection({ onRoleSelected }: RoleSelectionProps) {
             size="lg"
             className="px-8"
           >
-            {isLoading ? 'Setting up...' : 'Continue'}
+            {isLoading ? t('settingUp') : t('continue')}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
 
           {selectedRole && (
             <p className="mt-4 text-sm text-gray-600">
               {selectedRole === 'BOTH'
-                ? "You'll be able to use all features of the platform"
+                ? t('roleDescriptions.both')
                 : selectedRole === 'PROVIDER'
-                  ? "You'll be guided through the provider verification process"
-                  : 'You can start browsing and booking services immediately'}
+                  ? t('roleDescriptions.provider')
+                  : t('roleDescriptions.customer')}
             </p>
           )}
         </div>

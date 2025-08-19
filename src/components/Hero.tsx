@@ -90,7 +90,7 @@ export function Hero() {
   }, [trustSlides.length, mounted])
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-white">
+    <section className="bg-background relative min-h-screen overflow-hidden">
       {/* Hero Image Background - positioned on the right side */}
       <div className="absolute top-0 right-0 hidden h-full w-1/2 lg:block">
         <div className="relative h-full w-full">
@@ -101,7 +101,7 @@ export function Hero() {
             loading="eager"
             fetchPriority="high"
           />
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-white/20" />
+          <div className="to-background/20 absolute inset-0 bg-gradient-to-l from-transparent" />
         </div>
       </div>
 
@@ -179,8 +179,8 @@ export function Hero() {
                 />
                 <div className="from-primary/40 absolute inset-0 bg-gradient-to-t to-transparent" />
                 <div className="absolute right-4 bottom-4 left-4">
-                  <div className="rounded-lg bg-white/95 p-3 backdrop-blur-sm">
-                    <p className="text-sm font-medium text-gray-900">
+                  <div className="bg-background/95 rounded-lg p-3 backdrop-blur-sm">
+                    <p className="text-foreground text-sm font-medium">
                       {tTrust('trustedProfessionals')}
                     </p>
                   </div>

@@ -22,11 +22,11 @@ export function PopularServices() {
   ]
 
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="bg-muted/20 py-16">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-gray-900">{t('title')}</h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">{t('subtitle')}</p>
+          <h2 className="text-foreground mb-4 text-3xl font-bold">{t('title')}</h2>
+          <p className="text-muted-foreground mx-auto max-w-2xl text-lg">{t('subtitle')}</p>
         </div>
 
         <div className="mx-auto max-w-6xl">
@@ -40,7 +40,7 @@ export function PopularServices() {
             {serviceCategories.map((category, index) => (
               <Card
                 key={index}
-                className="group hover:border-primary cursor-pointer border-2 border-gray-200 bg-white transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                className="group hover:border-primary border-border bg-card cursor-pointer border-2 transition-all duration-200 hover:scale-105 hover:shadow-lg"
                 onClick={() => {
                   router.push(`/search?category=${encodeURIComponent(category.name)}`)
                 }}
@@ -48,7 +48,7 @@ export function PopularServices() {
                 <CardContent className="flex items-center space-x-4 p-6">
                   <div className="flex-shrink-0 text-3xl">{category.icon}</div>
                   <div className="text-left">
-                    <div className="group-hover:text-primary text-base font-semibold text-gray-900 transition-colors">
+                    <div className="group-hover:text-primary text-foreground text-base font-semibold transition-colors">
                       {category.displayName}
                     </div>
                     {category.popular && (

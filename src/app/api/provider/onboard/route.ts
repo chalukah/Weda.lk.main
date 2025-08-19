@@ -26,7 +26,32 @@ export async function POST(request: NextRequest) {
       certifications,
       languages,
       userEmail,
+      documents, // Array of uploaded document objects
     } = formData
+
+    // Validate required documents
+    if (!documents || !Array.isArray(documents) || documents.length === 0) {
+      return NextResponse.json(
+        {
+          error: 'At least one verification document (National ID or Passport) is required',
+        },
+        { status: 400 }
+      )
+    }
+
+    // Validate document types
+    const requiredDocTypes = ['NATIONAL_ID', 'POLICE_CLEARANCE']
+    const hasNationalId = documents.some((doc) => doc.documentType === 'NATIONAL_ID')
+    const hasPolice = documents.some((doc) => doc.documentType === 'POLICE_CLEARANCE')
+
+    if (!hasNationalId) {
+      return NextResponse.json(
+        {
+          error: 'National ID document is required for provider verification',
+        },
+        { status: 400 }
+      )
+    }
 
     // Check if user exists in auth.users, if not create one
     let user
@@ -120,13 +145,49 @@ export async function POST(request: NextRequest) {
       console.error('Error creating service provider:', providerError)
     }
 
-    console.log('Provider application saved to Supabase:', application)
+    // Store verification documents
+    const documentResults = []
+    for (const doc of documents) {
+      const { data: docRecord, error: docError } = await supabase
+        .from('verification_documents')
+        .insert({
+          provider_id: user.id,
+          document_type: doc.documentType,
+          file_url: doc.fileUrl,
+          status: 'PENDING',
+          expiry_date: doc.expiryDate ? new Date(doc.expiryDate).toISOString() : null,
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single()
+
+      if (docError) {
+        console.error('Error storing document:', docError)
+        return NextResponse.json(
+          {
+            error: `Failed to store ${doc.documentType} document`,
+          },
+          { status: 500 }
+        )
+      }
+
+      documentResults.push({
+        documentType: doc.documentType,
+        id: docRecord.id,
+        status: 'PENDING',
+      })
+    }
+
+    console.warn('Provider application saved to Supabase:', application)
+    console.warn('Verification documents stored:', documentResults)
 
     return NextResponse.json({
       success: true,
-      message: 'Provider application submitted successfully',
+      message: 'Provider application submitted successfully with verification documents',
       applicationId: application.id,
       providerId: user.id,
+      documentsStored: documentResults.length,
+      documents: documentResults,
     })
   } catch (error) {
     console.error('Error in provider onboarding API:', error)

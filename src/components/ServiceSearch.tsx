@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface ServiceSearchProps {
   onSearch?: (query: string, filters: SearchFilters) => void
@@ -34,18 +35,19 @@ export interface SearchFilters {
   sortBy?: 'distance' | 'rating' | 'price' | 'response_time'
 }
 
-const serviceCategories = [
-  { id: 'cleaning', name: 'House Cleaning', icon: '🏠' },
-  { id: 'plumbing', name: 'Plumbing', icon: '🔧' },
-  { id: 'electrical', name: 'Electrical', icon: '⚡' },
-  { id: 'gardening', name: 'Gardening', icon: '🌱' },
-  { id: 'painting', name: 'Painting', icon: '🖌️' },
-  { id: 'carpentry', name: 'Carpentry', icon: '🪚' },
-  { id: 'appliance', name: 'Appliance Repair', icon: '🔨' },
+const getServiceCategories = (t: any) => [
+  { id: 'cleaning', name: t('serviceCategories.houseCleaning'), icon: '🏠' },
+  { id: 'plumbing', name: t('serviceCategories.plumbing'), icon: '🔧' },
+  { id: 'electrical', name: t('serviceCategories.electrical'), icon: '⚡' },
+  { id: 'gardening', name: t('serviceCategories.gardening'), icon: '🌱' },
+  { id: 'painting', name: t('serviceCategories.painting'), icon: '🖌️' },
+  { id: 'carpentry', name: t('serviceCategories.carpentry'), icon: '🪚' },
+  { id: 'appliance', name: t('serviceCategories.applianceRepair'), icon: '🔨' },
   { id: 'other', name: 'Other Services', icon: '⚙️' },
 ]
 
 export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
+  const t = useTranslations()
   const [searchQuery, setSearchQuery] = useState('')
   const [location, setLocation] = useState('Colombo')
   const [showFilters, setShowFilters] = useState(false)
@@ -54,6 +56,8 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
     sortBy: 'distance',
   })
   const [isClient, setIsClient] = useState(false)
+
+  const serviceCategories = getServiceCategories(t)
 
   // Ensure client-side rendering consistency
   useEffect(() => {
@@ -90,10 +94,10 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
   }
 
   const quickFilters = [
-    { label: 'Nearby', value: 'nearby', icon: MapPin },
-    { label: 'Top Rated', value: 'rating', icon: Star },
-    { label: 'Fast Response', value: 'response', icon: Clock },
-    { label: 'Police Verified', value: 'verified', icon: Shield },
+    { label: t('filters.nearby'), value: 'nearby', icon: MapPin },
+    { label: t('filters.topRated'), value: 'rating', icon: Star },
+    { label: t('filters.fastResponse'), value: 'response', icon: Clock },
+    { label: t('filters.policeVerified'), value: 'verified', icon: Shield },
   ]
 
   return (
@@ -107,7 +111,7 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
               <div className="relative flex-1">
                 <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                 <Input
-                  placeholder="What service do you need?"
+                  placeholder={t('search.whatServiceNeeded')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -117,14 +121,14 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
               <div className="relative">
                 <MapPin className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                 <Input
-                  placeholder="Location"
+                  placeholder={t('location.enterAddress')}
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   className="h-12 w-32 pl-10 md:w-40"
                 />
               </div>
               <Button onClick={handleSearch} className="h-12 px-6">
-                Search
+                {t('search.searchButton')}
               </Button>
             </div>
 
@@ -203,7 +207,7 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
             className="flex items-center space-x-1"
           >
             <SlidersHorizontal className="h-4 w-4" />
-            <span>Filters</span>
+            <span>{t('filters.filters')}</span>
             {Object.keys(filters).length > 1 && (
               <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 text-xs">
                 {Object.keys(filters).length - 1}
@@ -218,18 +222,18 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
         <Card>
           <CardContent className="p-4">
             <div className="space-y-4">
-              <h3 className="text-foreground font-medium">Advanced Filters</h3>
+              <h3 className="text-foreground font-medium">{t('filters.advancedFilters')}</h3>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {/* Price Range */}
                 <div>
                   <label className="text-foreground mb-2 block text-sm font-medium">
-                    Price Range
+                    {t('filters.priceRange')}
                   </label>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <Input type="number" placeholder="Min" className="h-8" />
-                      <span className="text-muted-foreground">to</span>
+                      <span className="text-muted-foreground">{t('filters.to')}</span>
                       <Input type="number" placeholder="Max" className="h-8" />
                     </div>
                   </div>
@@ -238,7 +242,7 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
                 {/* Rating */}
                 <div>
                   <label className="text-foreground mb-2 block text-sm font-medium">
-                    Minimum Rating
+                    {t('filters.minimumRating')}
                   </label>
                   <div className="flex space-x-1">
                     {[1, 2, 3, 4, 5].map((rating) => (
@@ -258,13 +262,13 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
                 {/* Availability */}
                 <div>
                   <label className="text-foreground mb-2 block text-sm font-medium">
-                    Availability
+                    {t('filters.availability')}
                   </label>
                   <div className="space-y-1">
                     {[
-                      { value: 'all', label: 'Any time' },
-                      { value: 'available', label: 'Available now' },
-                      { value: 'today', label: 'Available today' },
+                      { value: 'all', label: t('filters.anyTime') },
+                      { value: 'available', label: t('filters.availableNow') },
+                      { value: 'today', label: t('filters.availableToday') },
                     ].map((option) => (
                       <label key={option.value} className="flex items-center space-x-2">
                         <input
@@ -290,13 +294,13 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
               {/* Verification Types */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Verification Requirements
+                  {t('filters.verificationRequirements')}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { value: 'police_verified', label: 'Police Verified' },
-                    { value: 'identity_verified', label: 'Identity Verified' },
-                    { value: 'professional_certified', label: 'Professional Certified' },
+                    { value: 'police_verified', label: t('filters.policeVerified') },
+                    { value: 'identity_verified', label: t('filters.identityVerified') },
+                    { value: 'professional_certified', label: t('filters.professionalCertified') },
                   ].map((verification) => (
                     <Button
                       key={verification.value}
@@ -327,10 +331,10 @@ export function ServiceSearch({ onSearch, className }: ServiceSearchProps) {
                   size="sm"
                   onClick={() => setFilters({ sortBy: 'distance' })}
                 >
-                  Clear All
+                  {t('filters.clearAll')}
                 </Button>
                 <Button size="sm" onClick={handleSearch}>
-                  Apply Filters
+                  {t('filters.applyFilters')}
                 </Button>
               </div>
             </div>

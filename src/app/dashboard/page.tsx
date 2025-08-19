@@ -8,18 +8,24 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { User, Settings, LogOut, Calendar, Search, Briefcase, Users } from 'lucide-react'
-import { useRouter } from '@/i18n/routing'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export const dynamic = 'force-dynamic'
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession()
+  const sessionResult = useSession({
+    required: false,
+  })
   const router = useRouter()
+
+  // Safe destructuring with fallbacks
+  const session = sessionResult?.data || null
+  const status = sessionResult?.status || 'loading'
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/login')
+      router.push('/en/login')
     }
   }, [status, router])
 
@@ -28,7 +34,7 @@ export default function DashboardPage() {
   const isAuthenticated = status === 'authenticated' && session
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/' })
+    signOut({ callbackUrl: '/en' })
   }
 
   const getInitials = (name: string) => {
@@ -40,7 +46,7 @@ export default function DashboardPage() {
   }
 
   const handleFindServices = () => {
-    router.push('/search')
+    router.push('/en/search')
   }
 
   const handleManageServices = () => {

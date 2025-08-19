@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   description:
     'Connect with trusted service providers across Sri Lanka. Find verified professionals for all your needs.',
   icons: {
-    icon: '/icon.png',
-    shortcut: '/favicon.png',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
     apple: '/icon.png',
     other: [
       {

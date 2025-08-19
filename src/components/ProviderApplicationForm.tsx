@@ -36,6 +36,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import confetti from 'canvas-confetti'
+import { districts as allDistricts } from '@/lib/locations'
+import { useTranslations } from 'next-intl'
 
 type FormStep = 1 | 2 | 3 | 4
 
@@ -68,56 +70,39 @@ interface FormData {
   agreedToTerms: boolean
 }
 
-const serviceCategories = [
-  'House Cleaning',
-  'Plumbing',
-  'Electrical',
-  'Gardening',
-  'Painting',
-  'Carpentry',
-  'AC Repair',
-  'Appliance Repair',
-  'Pest Control',
+const getServiceCategories = (t: any) => [
+  t('serviceCategories.houseCleaning'),
+  t('serviceCategories.plumbing'),
+  t('serviceCategories.electrical'),
+  t('serviceCategories.gardening'),
+  t('serviceCategories.painting'),
+  t('serviceCategories.carpentry'),
+  t('serviceCategories.acRepair'),
+  t('serviceCategories.applianceRepair'),
+  t('serviceCategories.pestControl'),
   'Moving Services',
-  'Security Services',
+  t('serviceCategories.security'),
   'Other',
 ]
 
-const districts = [
-  'Colombo',
-  'Gampaha',
-  'Kalutara',
-  'Kandy',
-  'Matale',
-  'Nuwara Eliya',
-  'Galle',
-  'Matara',
-  'Hambantota',
-  'Kurunegala',
-  'Puttalam',
-  'Anuradhapura',
-  'Polonnaruwa',
-  'Badulla',
-  'Monaragala',
-  'Ratnapura',
-  'Kegalle',
-  'Jaffna',
-  'Kilinochchi',
-  'Mannar',
-  'Vavuniya',
-  'Mullaitivu',
-  'Batticaloa',
-  'Ampara',
-  'Trincomalee',
-]
+// Use comprehensive districts list from shared locations
+const districts = allDistricts
 
-const languages = ['Sinhala', 'Tamil', 'English']
+const getLanguages = (t: any) => [
+  t('providerApplication.languages.sinhala'),
+  t('providerApplication.languages.tamil'),
+  t('providerApplication.languages.english'),
+]
 
 export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
   const router = useRouter()
   const { data: session } = useSession()
+  const t = useTranslations()
   const [currentStep, setCurrentStep] = useState<FormStep>(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const serviceCategories = getServiceCategories(t)
+  const languages = getLanguages(t)
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -247,6 +232,25 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
     setCurrentStep((prev) => Math.max(1, prev - 1) as FormStep)
   }
 
+  const uploadDocument = async (file: File, documentType: string) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('documentType', documentType)
+
+    const response = await fetch('/api/provider/upload-document', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || 'Upload failed')
+    }
+
+    const result = await response.json()
+    return result.data
+  }
+
   const handleSubmit = async () => {
     if (!session?.user?.email) {
       toast.error('Please log in to continue')
@@ -261,7 +265,48 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
     setIsSubmitting(true)
 
     try {
-      // Submit form data
+      // Upload documents first
+      const uploadedDocuments = []
+
+      if (formData.documents.nationalId) {
+        toast.info('Uploading National ID document...')
+        const nationalIdDoc = await uploadDocument(formData.documents.nationalId, 'NATIONAL_ID')
+        uploadedDocuments.push({
+          documentType: 'NATIONAL_ID',
+          fileUrl: nationalIdDoc.fileUrl,
+          expiryDate: null, // National ID doesn't typically expire
+        })
+      }
+
+      if (formData.documents.policeClearance) {
+        toast.info('Uploading Police Clearance document...')
+        const policeDoc = await uploadDocument(
+          formData.documents.policeClearance,
+          'POLICE_CLEARANCE'
+        )
+        uploadedDocuments.push({
+          documentType: 'POLICE_CLEARANCE',
+          fileUrl: policeDoc.fileUrl,
+          expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // Expires in 1 year
+        })
+      }
+
+      if (formData.documents.businessLicense) {
+        toast.info('Uploading Business License document...')
+        const businessDoc = await uploadDocument(
+          formData.documents.businessLicense,
+          'BUSINESS_REGISTRATION'
+        )
+        uploadedDocuments.push({
+          documentType: 'BUSINESS_REGISTRATION',
+          fileUrl: businessDoc.fileUrl,
+          expiryDate: null,
+        })
+      }
+
+      toast.info('Submitting provider application...')
+
+      // Submit form data with uploaded document URLs
       const response = await fetch('/api/provider/onboard', {
         method: 'POST',
         headers: {
@@ -279,6 +324,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           experience: formData.experience,
           certifications: formData.certifications,
           languages: formData.languages,
+          documents: uploadedDocuments, // Include uploaded documents
         }),
       })
 
@@ -347,33 +393,35 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           <div className="space-y-6">
             <div className="text-primary flex items-center space-x-2">
               <User className="h-5 w-5" />
-              <h3 className="text-lg font-semibold">Personal Information</h3>
+              <h3 className="text-lg font-semibold">
+                {t('providerApplication.personalInformation')}
+              </h3>
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="firstName">First Name *</Label>
+                <Label htmlFor="firstName">{t('providerApplication.firstName')}</Label>
                 <Input
                   id="firstName"
                   value={formData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  placeholder="Enter your first name"
+                  placeholder={t('providerApplication.enterFirstName')}
                 />
               </div>
               <div>
-                <Label htmlFor="lastName">Last Name *</Label>
+                <Label htmlFor="lastName">{t('providerApplication.lastName')}</Label>
                 <Input
                   id="lastName"
                   value={formData.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  placeholder="Enter your last name"
+                  placeholder={t('providerApplication.enterLastName')}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="phone">Phone Number *</Label>
+                <Label htmlFor="phone">{t('providerApplication.phoneNumber')}</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
@@ -382,7 +430,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
                 />
               </div>
               <div>
-                <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                <Label htmlFor="dateOfBirth">{t('providerApplication.dateOfBirth')}</Label>
                 <Input
                   id="dateOfBirth"
                   type="date"
@@ -393,7 +441,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
             </div>
 
             <div>
-              <Label htmlFor="nationalId">National ID Number *</Label>
+              <Label htmlFor="nationalId">{t('providerApplication.nationalId')}</Label>
               <Input
                 id="nationalId"
                 value={formData.nationalId}
@@ -409,51 +457,63 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           <div className="space-y-6">
             <div className="text-primary flex items-center space-x-2">
               <Building className="h-5 w-5" />
-              <h3 className="text-lg font-semibold">Business Information</h3>
+              <h3 className="text-lg font-semibold">
+                {t('providerApplication.businessInformation')}
+              </h3>
             </div>
 
             <div>
-              <Label htmlFor="businessName">Business Name *</Label>
+              <Label htmlFor="businessName">{t('providerApplication.businessName')}</Label>
               <Input
                 id="businessName"
                 value={formData.businessName}
                 onChange={(e) => handleInputChange('businessName', e.target.value)}
-                placeholder="Your business or professional name"
+                placeholder={t('providerApplication.businessNamePlaceholder')}
               />
             </div>
 
             <div>
-              <Label htmlFor="description">Service Description *</Label>
+              <Label htmlFor="description">{t('providerApplication.serviceDescription')}</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Describe your services and expertise..."
+                placeholder={t('providerApplication.serviceDescriptionPlaceholder')}
                 rows={4}
               />
             </div>
 
             <div>
-              <Label htmlFor="experience">Years of Experience *</Label>
+              <Label htmlFor="experience">{t('providerApplication.yearsExperience')}</Label>
               <Select
                 value={formData.experience}
                 onValueChange={(value) => handleInputChange('experience', value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select your experience level" />
+                  <SelectValue placeholder={t('providerApplication.selectExperience')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0-1">0-1 years</SelectItem>
-                  <SelectItem value="1-3">1-3 years</SelectItem>
-                  <SelectItem value="3-5">3-5 years</SelectItem>
-                  <SelectItem value="5-10">5-10 years</SelectItem>
-                  <SelectItem value="10+">10+ years</SelectItem>
+                  <SelectItem value="0-1">
+                    {t('providerApplication.experienceOptions.0-1')}
+                  </SelectItem>
+                  <SelectItem value="1-3">
+                    {t('providerApplication.experienceOptions.1-3')}
+                  </SelectItem>
+                  <SelectItem value="3-5">
+                    {t('providerApplication.experienceOptions.3-5')}
+                  </SelectItem>
+                  <SelectItem value="5-10">
+                    {t('providerApplication.experienceOptions.5-10')}
+                  </SelectItem>
+                  <SelectItem value="10+">
+                    {t('providerApplication.experienceOptions.10+')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label>Services Offered * (Select all that apply)</Label>
+              <Label>{t('providerApplication.servicesOffered')}</Label>
               <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-3">
                 {serviceCategories.map((service) => (
                   <div key={service} className="flex items-center space-x-2">
@@ -480,7 +540,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
             </div>
 
             <div>
-              <Label>Service Areas * (Select districts you serve)</Label>
+              <Label>{t('providerApplication.serviceAreas')}</Label>
               <div className="mt-2 grid max-h-40 grid-cols-2 gap-2 overflow-y-auto md:grid-cols-3">
                 {districts.map((district) => (
                   <div key={district} className="flex items-center space-x-2">
@@ -513,12 +573,12 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           <div className="space-y-6">
             <div className="text-primary flex items-center space-x-2">
               <FileText className="h-5 w-5" />
-              <h3 className="text-lg font-semibold">Document Upload</h3>
+              <h3 className="text-lg font-semibold">{t('providerApplication.documentUpload')}</h3>
             </div>
 
             <div className="space-y-4">
               <div>
-                <Label>National ID Copy / Passport Copy *</Label>
+                <Label>{t('providerApplication.nationalIdCopy')}</Label>
                 <div className="mt-2 rounded-lg border-2 border-dashed border-gray-300 p-4">
                   <input
                     type="file"
@@ -537,18 +597,18 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
                     <span className="mt-2 text-sm text-gray-600">
                       {formData.documents.nationalId
                         ? formData.documents.nationalId.name
-                        : 'Click to upload National ID or Passport'}
+                        : t('providerApplication.uploadNationalId')}
                     </span>
                   </label>
                 </div>
                 <p className="mt-1 text-xs text-gray-500">
-                  Upload either your National ID or Passport copy
+                  {t('providerApplication.uploadNationalIdDesc')}
                 </p>
               </div>
 
               {formData.services.includes('House Cleaning') && (
                 <div>
-                  <Label>Police Clearance Certificate *</Label>
+                  <Label>{t('providerApplication.policeClearance')}</Label>
                   <div className="mt-2 rounded-lg border-2 border-dashed border-gray-300 p-4">
                     <input
                       type="file"
@@ -568,18 +628,18 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
                       <span className="mt-2 text-sm text-gray-600">
                         {formData.documents.policeClearance
                           ? formData.documents.policeClearance.name
-                          : 'Click to upload Police Clearance'}
+                          : t('providerApplication.uploadPoliceClearance')}
                       </span>
                     </label>
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
-                    Required for house cleaning services only
+                    {t('providerApplication.policeClearanceDesc')}
                   </p>
                 </div>
               )}
 
               <div>
-                <Label>Portfolio/Work Samples (Optional)</Label>
+                <Label>{t('providerApplication.portfolio')}</Label>
                 <div className="mt-2 rounded-lg border-2 border-dashed border-gray-300 p-4">
                   <input
                     type="file"
@@ -594,7 +654,9 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
                     className="flex cursor-pointer flex-col items-center"
                   >
                     <Camera className="h-8 w-8 text-gray-400" />
-                    <span className="mt-2 text-sm text-gray-600">Click to upload work samples</span>
+                    <span className="mt-2 text-sm text-gray-600">
+                      {t('providerApplication.uploadPortfolio')}
+                    </span>
                   </label>
                 </div>
                 {formData.documents.portfolio.length > 0 && (
@@ -626,11 +688,11 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
           <div className="space-y-6">
             <div className="text-primary flex items-center space-x-2">
               <CheckCircle className="h-5 w-5" />
-              <h3 className="text-lg font-semibold">Final Details</h3>
+              <h3 className="text-lg font-semibold">{t('providerApplication.finalDetails')}</h3>
             </div>
 
             <div>
-              <Label>Languages Spoken * (Select all that apply)</Label>
+              <Label>{t('providerApplication.languagesSpoken')}</Label>
               <div className="mt-2 flex flex-wrap gap-2">
                 {languages.map((language) => (
                   <div key={language} className="flex items-center space-x-2">
@@ -646,12 +708,12 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
             </div>
 
             <div>
-              <Label htmlFor="certifications">Certifications & Qualifications (Optional)</Label>
+              <Label htmlFor="certifications">{t('providerApplication.certifications')}</Label>
               <Textarea
                 id="certifications"
                 value={formData.certifications}
                 onChange={(e) => handleInputChange('certifications', e.target.value)}
-                placeholder="List any relevant certifications, training, or qualifications..."
+                placeholder={t('providerApplication.certificationsPlaceholder')}
                 rows={3}
               />
             </div>
@@ -664,8 +726,7 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
                   onCheckedChange={(checked) => handleInputChange('agreedToTerms', checked)}
                 />
                 <Label htmlFor="terms" className="text-sm leading-relaxed">
-                  I agree to Weda.lk's Terms of Service and Privacy Policy. I understand that my
-                  application will be reviewed and I may be contacted for additional verification. *
+                  {t('providerApplication.termsAgreement')}
                 </Label>
               </div>
             </div>
@@ -683,8 +744,10 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
         <div className="border-b p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold">Provider Application</h2>
-              <p className="text-gray-600">Step {currentStep} of 4</p>
+              <h2 className="text-2xl font-bold">{t('providerApplication.title')}</h2>
+              <p className="text-gray-600">
+                {t('providerApplication.stepOf', { current: currentStep, total: 4 })}
+              </p>
             </div>
             <Button variant="ghost" onClick={onClose}>
               <X className="h-5 w-5" />
@@ -698,12 +761,12 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
         <div className="flex justify-between border-t bg-gray-50 p-6">
           <Button variant="outline" onClick={prevStep} disabled={currentStep === 1}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Previous
+            {t('providerApplication.previous')}
           </Button>
 
           {currentStep < 4 ? (
             <Button onClick={nextStep}>
-              Next
+              {t('providerApplication.next')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
@@ -712,7 +775,9 @@ export function ProviderApplicationForm({ onClose }: { onClose: () => void }) {
               disabled={isSubmitting || !validateStep(4)}
               className="bg-primary text-white"
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Application'}
+              {isSubmitting
+                ? t('providerApplication.submitting')
+                : t('providerApplication.submitApplication')}
             </Button>
           )}
         </div>

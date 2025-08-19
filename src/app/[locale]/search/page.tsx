@@ -21,32 +21,50 @@ import {
 } from 'lucide-react'
 import { useRouter } from '@/i18n/routing'
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function SearchPage() {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const t = useTranslations()
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
   const serviceCategories = [
-    { name: 'Home Cleaning', icon: Home, color: 'from-blue-500 to-cyan-500' },
-    { name: 'Plumbing', icon: Wrench, color: 'from-indigo-500 to-blue-500' },
-    { name: 'Electrical Work', icon: Zap, color: 'from-yellow-500 to-orange-500' },
-    { name: 'Carpentry', icon: Hammer, color: 'from-amber-500 to-yellow-500' },
-    { name: 'Painting', icon: PaintBucket, color: 'from-purple-500 to-pink-500' },
-    { name: 'Gardening', icon: Leaf, color: 'from-green-500 to-emerald-500' },
-    { name: 'Pest Control', icon: Bug, color: 'from-red-500 to-rose-500' },
-    { name: 'AC Repair', icon: Fan, color: 'from-cyan-500 to-blue-500' },
-    { name: 'Appliance Repair', icon: Settings, color: 'from-gray-500 to-slate-500' },
-    { name: 'Interior Design', icon: Palette, color: 'from-pink-500 to-purple-500' },
-    { name: 'Handyman', icon: Wrench, color: 'from-orange-500 to-red-500' },
-    { name: 'Security', icon: Shield, color: 'from-slate-500 to-gray-500' },
+    { name: t('serviceCategories.houseCleaning'), icon: Home, color: 'from-blue-500 to-cyan-500' },
+    { name: t('serviceCategories.plumbing'), icon: Wrench, color: 'from-indigo-500 to-blue-500' },
+    {
+      name: t('serviceCategories.electricalWork'),
+      icon: Zap,
+      color: 'from-yellow-500 to-orange-500',
+    },
+    { name: t('serviceCategories.carpentry'), icon: Hammer, color: 'from-amber-500 to-yellow-500' },
+    {
+      name: t('serviceCategories.painting'),
+      icon: PaintBucket,
+      color: 'from-purple-500 to-pink-500',
+    },
+    { name: t('serviceCategories.gardening'), icon: Leaf, color: 'from-green-500 to-emerald-500' },
+    { name: t('serviceCategories.pestControl'), icon: Bug, color: 'from-red-500 to-rose-500' },
+    { name: t('serviceCategories.acRepair'), icon: Fan, color: 'from-cyan-500 to-blue-500' },
+    {
+      name: t('serviceCategories.applianceRepair'),
+      icon: Settings,
+      color: 'from-gray-500 to-slate-500',
+    },
+    {
+      name: t('serviceCategories.interiorDesign'),
+      icon: Palette,
+      color: 'from-pink-500 to-purple-500',
+    },
+    { name: t('serviceCategories.handyman'), icon: Wrench, color: 'from-orange-500 to-red-500' },
+    { name: t('serviceCategories.security'), icon: Shield, color: 'from-slate-500 to-gray-500' },
   ]
 
   const handleServiceClick = (serviceName: string) => {
-    const searchParams = new URLSearchParams()
+    const searchParams = new globalThis.URLSearchParams()
     searchParams.set('service', serviceName.toLowerCase().replace(' ', '-'))
     router.push(`/search/results?${searchParams.toString()}`)
   }
@@ -57,7 +75,7 @@ export default function SearchPage() {
     const service = formData.get('service') as string
     const location = formData.get('location') as string
 
-    const searchParams = new URLSearchParams()
+    const searchParams = new globalThis.URLSearchParams()
     if (service) searchParams.set('service', service.toLowerCase().replace(/\s+/g, '-'))
     if (location) searchParams.set('location', location)
 
@@ -75,8 +93,8 @@ export default function SearchPage() {
       <main className="pt-16">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold">Find Services</h1>
-            <p className="text-muted-foreground">Discover trusted service providers in your area</p>
+            <h1 className="mb-2 text-3xl font-bold">{t('search.findServices')}</h1>
+            <p className="text-muted-foreground">{t('search.discoverProviders')}</p>
           </div>
 
           {/* Search Interface */}
@@ -84,7 +102,7 @@ export default function SearchPage() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Search className="mr-2 h-5 w-5" />
-                Search for Services
+                {t('search.searchForServices')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -93,16 +111,20 @@ export default function SearchPage() {
                   <div>
                     <Input
                       name="service"
-                      placeholder="What service do you need?"
+                      placeholder={t('search.whatServiceNeeded')}
                       className="w-full"
                     />
                   </div>
                   <div>
-                    <Input name="location" placeholder="Enter your location" className="w-full" />
+                    <Input
+                      name="location"
+                      placeholder={t('search.enterLocation')}
+                      className="w-full"
+                    />
                   </div>
                   <Button type="submit" className="w-full">
                     <Search className="mr-2 h-4 w-4" />
-                    Search
+                    {t('search.searchButton')}
                   </Button>
                 </div>
               </form>
@@ -144,10 +166,8 @@ export default function SearchPage() {
           <Card>
             <CardContent className="text-muted-foreground py-12 text-center">
               <Search className="mx-auto mb-4 h-12 w-12 opacity-50" />
-              <h3 className="mb-2 text-lg font-medium">Start Your Search</h3>
-              <p>
-                Enter what you're looking for and your location to find trusted service providers.
-              </p>
+              <h3 className="mb-2 text-lg font-medium">{t('search.startSearch')}</h3>
+              <p>{t('search.startSearchDesc')}</p>
             </CardContent>
           </Card>
         </div>

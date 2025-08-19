@@ -9,6 +9,7 @@ import { Star, MapPin, Phone, Clock, ArrowLeft } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/i18n/routing'
 import { Suspense, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface Provider {
   id: string
@@ -39,6 +40,7 @@ interface SearchResponse {
 function SearchResultsContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const t = useTranslations()
   const service = searchParams.get('service')
   const location = searchParams.get('location')
 
@@ -50,7 +52,7 @@ function SearchResultsContent() {
     const fetchProviders = async () => {
       try {
         setLoading(true)
-        const params = new URLSearchParams()
+        const params = new globalThis.URLSearchParams()
         if (service) params.set('service', service)
         if (location) params.set('location', location)
 
@@ -85,14 +87,16 @@ function SearchResultsContent() {
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back
+              {t('search.back')}
             </Button>
             <div>
               <h1 className="text-2xl font-bold capitalize">
                 {service?.replace('-', ' ')} Services
               </h1>
               <p className="text-muted-foreground">
-                {loading ? 'Searching...' : `${providers.length} providers found near you`}
+                {loading
+                  ? t('search.searching')
+                  : t('search.servicesFound', { count: providers.length })}
               </p>
             </div>
           </div>
@@ -123,9 +127,11 @@ function SearchResultsContent() {
           {error && (
             <Card>
               <CardContent className="py-12 text-center">
-                <h3 className="mb-2 text-lg font-medium text-red-600">Error Loading Providers</h3>
+                <h3 className="mb-2 text-lg font-medium text-red-600">
+                  {t('search.errorLoadingProviders')}
+                </h3>
                 <p className="text-muted-foreground mb-4">{error}</p>
-                <Button onClick={() => window.location.reload()}>Try Again</Button>
+                <Button onClick={() => window.location.reload()}>{t('search.tryAgain')}</Button>
               </CardContent>
             </Card>
           )}
@@ -162,7 +168,7 @@ function SearchResultsContent() {
                               <h3 className="text-lg font-semibold">{provider.name}</h3>
                               {provider.verified && (
                                 <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                  Verified
+                                  {t('search.verified')}
                                 </Badge>
                               )}
                             </div>
@@ -199,9 +205,9 @@ function SearchResultsContent() {
 
                           <div className="flex gap-2">
                             <Button variant="outline" size="sm">
-                              View Profile
+                              {t('search.viewProfile')}
                             </Button>
-                            <Button size="sm">Book Now</Button>
+                            <Button size="sm">{t('search.bookNow')}</Button>
                           </div>
                         </div>
                       </div>
@@ -215,15 +221,13 @@ function SearchResultsContent() {
           {!loading && !error && providers.length === 0 && (
             <Card>
               <CardContent className="py-12 text-center">
-                <h3 className="mb-2 text-lg font-medium">No providers found</h3>
+                <h3 className="mb-2 text-lg font-medium">{t('search.noProvidersFound')}</h3>
                 <p className="text-muted-foreground mb-4">
-                  No service providers are currently available for "{service?.replace('-', ' ')}" in
-                  your area.
+                  {t('search.noProvidersDesc', {
+                    service: service?.replace('-', ' ') || 'this service',
+                  })}
                 </p>
-                <p className="text-muted-foreground text-sm">
-                  Try searching for different services or check back later as new providers join our
-                  platform.
-                </p>
+                <p className="text-muted-foreground text-sm">{t('search.tryDifferentSearch')}</p>
               </CardContent>
             </Card>
           )}

@@ -15,6 +15,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
+import { allCities, searchLocations, getLocationData } from '@/lib/locations'
+import { useTranslations } from 'next-intl'
 
 export interface Location {
   address: string
@@ -39,136 +41,87 @@ interface LocationPickerProps {
 
 type LocationState = 'idle' | 'detecting' | 'detected' | 'manual' | 'error'
 
-// Mock service areas - in real app, this would come from API
-const serviceAreas = [
-  'Colombo',
-  'Gampaha',
-  'Kalutara',
-  'Mount Lavinia',
-  'Dehiwala',
-  'Nugegoda',
-  'Maharagama',
-  'Kotte',
-]
+// Service areas - all Sri Lankan cities are now supported
+const serviceAreas = allCities
 
-// Sri Lankan address database - replaces Google Places API
-const sriLankanAddresses = [
-  // Colombo District
-  {
-    address: 'Galle Road, Colombo 03',
-    city: 'Colombo',
-    district: 'Colombo',
-    coordinates: { lat: 6.9271, lng: 79.8612 },
-  },
-  {
-    address: 'Kandy Road, Colombo 07',
-    city: 'Colombo',
-    district: 'Colombo',
-    coordinates: { lat: 6.9147, lng: 79.8781 },
-  },
-  {
-    address: 'Baseline Road, Colombo 09',
-    city: 'Colombo',
-    district: 'Colombo',
-    coordinates: { lat: 6.8905, lng: 79.882 },
-  },
-  {
-    address: 'Marine Drive, Colombo 03',
-    city: 'Colombo',
-    district: 'Colombo',
-    coordinates: { lat: 6.9319, lng: 79.8448 },
-  },
+// Generate Sri Lankan addresses database from comprehensive cities data
+const generateAddresses = (): Location[] => {
+  const addresses: Location[] = []
 
-  // Gampaha District
-  {
-    address: 'High Level Road, Maharagama',
-    city: 'Maharagama',
-    district: 'Colombo',
-    coordinates: { lat: 6.8484, lng: 79.9267 },
-  },
-  {
-    address: 'Gampaha Road, Kiribathgoda',
-    city: 'Kiribathgoda',
-    district: 'Gampaha',
-    coordinates: { lat: 6.9804, lng: 79.9297 },
-  },
-  {
-    address: 'Colombo Road, Negombo',
-    city: 'Negombo',
-    district: 'Gampaha',
-    coordinates: { lat: 7.2083, lng: 79.8358 },
-  },
-  {
-    address: 'Main Street, Wattala',
-    city: 'Wattala',
-    district: 'Gampaha',
-    coordinates: { lat: 6.9897, lng: 79.8915 },
-  },
+  // Generate addresses for all cities
+  allCities.forEach((city) => {
+    const locationData = getLocationData(city)
 
-  // Mount Lavinia & Dehiwala
-  {
-    address: 'Galle Road, Mount Lavinia',
-    city: 'Mount Lavinia',
-    district: 'Colombo',
-    coordinates: { lat: 6.8344, lng: 79.8636 },
-  },
-  {
-    address: 'Dehiwala Road, Dehiwala',
-    city: 'Dehiwala',
-    district: 'Colombo',
-    coordinates: { lat: 6.8517, lng: 79.8648 },
-  },
+    addresses.push({
+      address: `Main Street, ${city}`,
+      city: city,
+      district: locationData.district,
+      coordinates: { lat: 6.9271, lng: 79.8612 }, // Default coordinates - in real app, use actual coordinates
+    })
 
-  // Nugegoda & Kotte Area
-  {
-    address: 'High Level Road, Nugegoda',
-    city: 'Nugegoda',
-    district: 'Colombo',
-    coordinates: { lat: 6.8649, lng: 79.8997 },
-  },
-  {
-    address: 'Parliament Road, Kotte',
-    city: 'Kotte',
-    district: 'Colombo',
-    coordinates: { lat: 6.8905, lng: 79.9015 },
-  },
+    // Add some common road names for major cities
+    if (
+      [
+        'Colombo',
+        'Kandy',
+        'Galle',
+        'Negombo',
+        'Jaffna',
+        'Anuradhapura',
+        'Trincomalee',
+        'Batticaloa',
+        'Matara',
+      ].includes(city)
+    ) {
+      const roads = [
+        'Galle Road',
+        'Kandy Road',
+        'Main Street',
+        'High Street',
+        'Station Road',
+        'Hospital Road',
+        'Temple Road',
+      ]
+      roads.forEach((road) => {
+        addresses.push({
+          address: `${road}, ${city}`,
+          city: city,
+          district: locationData.district,
+          coordinates: { lat: 6.9271, lng: 79.8612 },
+        })
+      })
+    }
+  })
 
-  // Kalutara District
-  {
-    address: 'Galle Road, Kalutara',
-    city: 'Kalutara',
-    district: 'Kalutara',
-    coordinates: { lat: 6.5854, lng: 79.9607 },
-  },
-  {
-    address: 'Main Street, Panadura',
-    city: 'Panadura',
-    district: 'Kalutara',
-    coordinates: { lat: 6.7132, lng: 79.9026 },
-  },
-]
+  return addresses
+}
+
+const sriLankanAddresses = generateAddresses()
 
 export function LocationPicker({
   value,
   onChange,
   onLocationDetected,
-  placeholder = 'Enter your address',
+  placeholder,
   className,
   variant = 'search',
   showServiceArea = true,
 }: LocationPickerProps) {
+  const t = useTranslations()
   const [locationState, setLocationState] = useState<LocationState>('idle')
   const [searchQuery, setSearchQuery] = useState(value?.address || '')
   const [suggestions, setSuggestions] = useState<Location[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [error, setError] = useState<string>('')
 
+  const defaultPlaceholder = placeholder || t('location.enterAddress')
+
   const handleDetectLocation = async () => {
     setLocationState('detecting')
     setError('')
 
     if (!navigator.geolocation) {
-      setError('Location detection not supported by this browser')
+      setError(t('location.locationNotSupported'))
       setLocationState('error')
       return
     }
@@ -198,7 +151,7 @@ export function LocationPicker({
       onLocationDetected?.(detectedLocation)
       setSearchQuery(detectedLocation.address)
     } catch (err) {
-      setError('Unable to detect location. Please enter manually.')
+      setError(t('location.unableToDetect'))
       setLocationState('error')
     }
   }
@@ -207,15 +160,51 @@ export function LocationPicker({
     setSearchQuery(query)
     setLocationState('manual')
 
-    // Search Sri Lankan addresses database
-    if (query.length > 2) {
-      const filtered = sriLankanAddresses.filter(
-        (addr) =>
-          addr.address.toLowerCase().includes(query.toLowerCase()) ||
-          addr.city.toLowerCase().includes(query.toLowerCase()) ||
-          addr.district.toLowerCase().includes(query.toLowerCase())
+    // Search Sri Lankan addresses database with enhanced search
+    if (query.length > 1) {
+      // Use the enhanced search function
+      const locationResults = searchLocations(query)
+
+      // Convert to Location format and add address variations
+      const filtered: Location[] = []
+
+      locationResults.forEach((result) => {
+        // Add main city entry
+        filtered.push({
+          address: `${result.city}`,
+          city: result.city,
+          district: result.district,
+          coordinates: { lat: 6.9271, lng: 79.8612 },
+        })
+
+        // Add with district for clarity
+        if (result.city !== result.district) {
+          filtered.push({
+            address: `${result.city}, ${result.district}`,
+            city: result.city,
+            district: result.district,
+            coordinates: { lat: 6.9271, lng: 79.8612 },
+          })
+        }
+      })
+
+      // Also search existing address database for street-level results
+      const streetResults = sriLankanAddresses
+        .filter(
+          (addr) =>
+            addr.address.toLowerCase().includes(query.toLowerCase()) ||
+            addr.city.toLowerCase().includes(query.toLowerCase()) ||
+            addr.district.toLowerCase().includes(query.toLowerCase())
+        )
+        .slice(0, 5) // Limit street results
+
+      // Combine and deduplicate results
+      const combined = [...filtered, ...streetResults]
+      const unique = combined.filter(
+        (addr, index, self) => index === self.findIndex((a) => a.address === addr.address)
       )
-      setSuggestions(filtered)
+
+      setSuggestions(unique.slice(0, 15)) // Limit total results
       setShowSuggestions(true)
     } else {
       setShowSuggestions(false)
@@ -233,7 +222,7 @@ export function LocationPicker({
   }
 
   const isInServiceArea = (city: string) => {
-    return serviceAreas.includes(city)
+    return serviceAreas.includes(city as any)
   }
 
   const getLocationIcon = () => {
@@ -261,7 +250,7 @@ export function LocationPicker({
             <Input
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder={placeholder}
+              placeholder={defaultPlaceholder}
               className={cn(
                 'pr-4 pl-10',
                 locationState === 'error' && 'border-red-500',
@@ -315,8 +304,8 @@ export function LocationPicker({
                               className="text-xs"
                             >
                               {isInServiceArea(suggestion.city)
-                                ? 'Service Available'
-                                : 'Outside Service Area'}
+                                ? t('location.serviceAvailable')
+                                : t('location.outsideServiceArea')}
                             </Badge>
                           </div>
                         )}
@@ -341,7 +330,9 @@ export function LocationPicker({
             className="flex-1"
           >
             <Crosshair className="mr-2 h-4 w-4" />
-            {locationState === 'detecting' ? 'Detecting...' : 'Use Current Location'}
+            {locationState === 'detecting'
+              ? t('location.detecting')
+              : t('location.useCurrentLocation')}
           </Button>
         </div>
       )}
@@ -361,14 +352,14 @@ export function LocationPicker({
               <>
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <span className="text-sm text-green-700 dark:text-green-300">
-                  Great! We provide services in {value.city}
+                  {t('location.greatService', { city: value.city })}
                 </span>
               </>
             ) : (
               <>
                 <AlertCircle className="h-4 w-4 text-yellow-600" />
                 <span className="text-sm text-yellow-700 dark:text-yellow-300">
-                  We don't currently service {value.city}. Try expanding your search radius.
+                  {t('location.dontServiceArea', { city: value.city })}
                 </span>
               </>
             )}
@@ -380,18 +371,16 @@ export function LocationPicker({
       {variant === 'map' && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">Select Location on Map</CardTitle>
+            <CardTitle className="text-sm">{t('location.selectLocationOnMap')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="bg-muted text-muted-foreground flex h-64 items-center justify-center rounded-lg border-2 border-dashed">
               {/* OpenStreetMap alternative - simple location selection */}
               <div className="text-center">
                 <MapPin className="mx-auto mb-2 h-8 w-8" />
-                <p className="text-sm">Location Selector</p>
-                <p className="text-xs">Use current location or search above</p>
-                <p className="mt-2 text-xs text-yellow-600">
-                  Map view available without external APIs
-                </p>
+                <p className="text-sm">{t('location.locationSelector')}</p>
+                <p className="text-xs">{t('location.useCurrentOrSearch')}</p>
+                <p className="mt-2 text-xs text-yellow-600">{t('location.mapViewAvailable')}</p>
               </div>
             </div>
           </CardContent>

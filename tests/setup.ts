@@ -29,13 +29,13 @@ globalThis.ResizeObserver = class ResizeObserver {
 }
 
 // Mock next/router
-globalThis.jest.mock('next/router', () => ({
+jest.mock('next/router', () => ({
   useRouter: () => ({
-    push: globalThis.jest.fn(),
-    replace: globalThis.jest.fn(),
-    prefetch: globalThis.jest.fn(),
-    back: globalThis.jest.fn(),
-    reload: globalThis.jest.fn(),
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+    reload: jest.fn(),
     route: '/',
     pathname: '/',
     query: {},
@@ -44,14 +44,14 @@ globalThis.jest.mock('next/router', () => ({
 }))
 
 // Mock next/navigation
-globalThis.jest.mock('next/navigation', () => ({
+jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: globalThis.jest.fn(),
-    replace: globalThis.jest.fn(),
-    prefetch: globalThis.jest.fn(),
-    back: globalThis.jest.fn(),
-    forward: globalThis.jest.fn(),
-    refresh: globalThis.jest.fn(),
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
   }),
   usePathname: () => '/',
   useSearchParams: () => new globalThis.URLSearchParams(),

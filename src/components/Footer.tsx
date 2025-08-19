@@ -1,7 +1,8 @@
 import { Separator } from '@/components/ui/separator'
-import { Home, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
+import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
+import Image from 'next/image'
 
 const socialLinks = [
   { name: 'Facebook', icon: Facebook, href: 'https://facebook.com/weda.lk' },
@@ -40,20 +41,26 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-gray-900 text-white" suppressHydrationWarning>
+    <footer className="bg-muted/30 text-foreground" suppressHydrationWarning>
       <div className="container mx-auto px-4 py-12">
         {/* Main Footer Content */}
         <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-6">
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="mb-4 flex items-center">
-              <Home className="mr-2 h-8 w-8 text-blue-500" />
+              <Image
+                src="/logo.png"
+                alt="වැඩ.lk Logo"
+                width={32}
+                height={32}
+                className="mr-2 rounded"
+              />
               <span className="text-2xl font-bold">වැඩ.lk</span>
             </div>
-            <p className="mb-6 max-w-sm text-gray-400">{t('description')}</p>
+            <p className="text-muted-foreground mb-6 max-w-sm">{t('description')}</p>
 
             {/* Contact Info */}
-            <div className="space-y-2 text-sm text-gray-400">
+            <div className="text-muted-foreground space-y-2 text-sm">
               <div className="flex items-center">
                 <MapPin className="mr-2 h-4 w-4" />
                 <span>123 Galle Road, Colombo 03, Sri Lanka</span>
@@ -77,7 +84,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 transition-colors duration-200 hover:text-white"
+                    className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -93,7 +100,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 transition-colors duration-200 hover:text-white"
+                    className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -109,7 +116,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 transition-colors duration-200 hover:text-white"
+                    className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -125,7 +132,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 transition-colors duration-200 hover:text-white"
+                    className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -135,11 +142,11 @@ export default function Footer() {
           </div>
         </div>
 
-        <Separator className="mb-8 bg-gray-700" />
+        <Separator className="bg-border mb-8" />
 
         {/* Bottom Footer */}
         <div className="flex flex-col items-center justify-between md:flex-row">
-          <div className="mb-4 text-sm text-gray-400 md:mb-0">
+          <div className="text-muted-foreground mb-4 text-sm md:mb-0">
             © 2024 වැඩ.lk. {t('rightsReserved')}
           </div>
 
@@ -153,7 +160,7 @@ export default function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 transition-colors duration-200 hover:text-white"
+                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                   aria-label={social.name}
                 >
                   <Icon className="h-5 w-5" />

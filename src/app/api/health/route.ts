@@ -13,7 +13,7 @@ export async function GET() {
     let dbResponseTime = 0
 
     try {
-      const { data, error } = await supabaseServer.from('users').select('id').limit(1)
+      const { error } = await supabaseServer.from('users').select('id').limit(1)
 
       dbResponseTime = Date.now() - dbStartTime
       if (!error) {
